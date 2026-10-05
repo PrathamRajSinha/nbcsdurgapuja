@@ -18,7 +18,7 @@ export function HomePage() {
             <p className="hero-bengali">শারদ উৎসব</p>
             <div className="hero-cta-row">
               <Button variant="festival" size="xl" asChild><a href="/durga-puja">Explore Puja <ArrowRight /></a></Button>
-              <a className="text-link" href="#story">Discover our story <ArrowDown /></a>
+              <Button variant="ink" size="xl" asChild><a href="#story">Discover our story <ArrowDown /></a></Button>
             </div>
           </div>
           <HeroArtwork />
