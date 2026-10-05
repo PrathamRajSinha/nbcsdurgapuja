@@ -13,3 +13,4 @@
 - Build shared festival navigation and footer through `PageShell`; this keeps all public pages visually continuous.
 - Drive the home Durga Puja schedule horizontally from native vertical page scroll; this makes the six-day programme browsable without a separate gesture.
 - Use one root-level Lenis instance for site-wide smooth scrolling; this keeps scroll-linked sections synchronized and avoids competing controllers.
+- Use the paired dhunuchi-dancer artwork for repeating section borders and tie its left-to-right motion to page scroll; this keeps decorative separators consistent and interactive.
