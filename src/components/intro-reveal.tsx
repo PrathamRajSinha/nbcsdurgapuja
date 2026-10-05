@@ -54,7 +54,7 @@ export function IntroReveal() {
   };
 
   if (phase === "hidden") return null;
-  if (phase === "pending") return <div className="intro-reveal"><div className="intro-curtain intro-curtain-left" /><div className="intro-curtain intro-curtain-right" /></div>;
+  if (phase === "pending") return <div className="intro-reveal"><div className="intro-curtain intro-curtain-left" /><div className="intro-curtain intro-curtain-right" /><img className="logo-spinner intro-wait-logo" src={logoAsset.url} alt="" /></div>;
   return (
     <div className={`intro-reveal ${phase === "leaving" ? "is-leaving" : ""}`}>
       <div className="intro-curtain intro-curtain-left" />
