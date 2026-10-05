@@ -31,11 +31,15 @@ export function SiteHeader() {
   return (
     <header className={`site-header ${scrolled ? "is-scrolled" : ""} ${open ? "menu-open" : ""}`}>
       <Link to="/" className="brand-lockup" aria-label="NBCS home">
-        <img src={logoAsset.url} alt="NBCS emblem" />
-        <span>NBCS</span>
+        <span className="brand-emblem"><img src={logoAsset.url} alt="NBCS emblem" /></span>
+        <span className="brand-text"><strong>NBCS</strong><small>Est. 49 years · Bengaluru</small></span>
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">
-        {navItems.slice(0, 7).map((item) => <Link key={item.href} to={item.href}>{item.label}</Link>)}
+        {navItems.slice(0, 7).map((item) => (
+          <Link key={item.href} to={item.href} activeOptions={{ exact: item.href === "/" }} activeProps={{ className: "is-active" }}>
+            <span>{item.label}</span>
+          </Link>
+        ))}
       </nav>
       <div className="header-actions">
         <Button variant="donate" size="lg" asChild><a href="#donate"><Heart /> Donate</a></Button>
@@ -50,7 +54,7 @@ export function SiteHeader() {
               <Link key={item.href} to={item.href} onClick={() => setOpen(false)}><small>0{index + 1}</small>{item.label}</Link>
             ))}
           </nav>
-          <p>North Bangalore Cultural Samithi<br />Durga Puja & Kali Bari</p>
+          <p><img className="menu-logo" src={logoAsset.url} alt="" />North Bangalore Cultural Samithi<br />Durga Puja & Kali Bari</p>
         </div>
       )}
     </header>
