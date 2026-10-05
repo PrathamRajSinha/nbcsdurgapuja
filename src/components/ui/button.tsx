@@ -3,6 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import lotusAsset from "@/assets/lotus.png.asset.json";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
@@ -16,10 +17,10 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        festival: "rounded-none border border-primary bg-primary text-primary-foreground uppercase tracking-widest shadow-none hover:-translate-y-0.5 hover:bg-primary/90",
+        festival: "lotus-button rounded-none border border-primary bg-primary text-primary-foreground uppercase tracking-widest shadow-none",
         ink: "rounded-none border-b border-foreground bg-transparent px-0 text-foreground shadow-none hover:gap-4",
-        gold: "rounded-none border border-gold bg-gold text-kali shadow-none hover:-translate-y-0.5 hover:bg-gold/90",
-        donate: "rounded-full bg-vermilion text-primary-foreground shadow-none hover:-translate-y-0.5 hover:bg-vermilion/90",
+        gold: "lotus-button rounded-none border border-gold bg-gold text-kali shadow-none",
+        donate: "lotus-button rounded-none border border-vermilion bg-vermilion text-primary-foreground shadow-none",
         navIcon: "rounded-full border border-border/70 bg-background/70 text-foreground shadow-none backdrop-blur-xl hover:bg-background",
       },
       size: {
@@ -43,10 +44,14 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, style, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
+    const decorative = variant === "festival" || variant === "gold" || variant === "donate";
+    const buttonStyle = decorative
+      ? ({ ...style, "--button-lotus": `url(${lotusAsset.url})` } as React.CSSProperties)
+      : style;
     return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} style={buttonStyle} {...props} />
     );
   },
 );

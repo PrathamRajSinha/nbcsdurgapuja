@@ -2,8 +2,7 @@ import { ArrowDown, ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { festivalDates, impact, pujaJourney } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
-import waterAsset from "@/assets/water.png.asset.json";
-import { FallingPetals, HeroArtwork, LotusAccent, WaterDivider } from "./festival-art";
+import { FallingPetals, HeroArtwork, LotusAccent, WaterDivider, WaterRibbon } from "./festival-art";
 import { PageShell } from "./site-chrome";
 
 export function HomePage() {
@@ -47,7 +46,7 @@ export function HomePage() {
             <p>People from every walk of life come together for five days of festivities and cultural celebration.</p>
             <Button variant="festival" size="xl" asChild><a href="/durga-puja">Explore Durga Puja <ArrowRight /></a></Button>
           </div>
-          <img className="puja-water" src={waterAsset.url} alt="" aria-hidden="true" />
+          <WaterRibbon className="puja-water" />
         </section>
 
         <section className="journey-section">
