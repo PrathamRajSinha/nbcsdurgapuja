@@ -8,7 +8,16 @@ export function FallingPetals() {
   return (
     <div className="petal-field" aria-hidden="true">
       {Array.from({ length: 12 }, (_, index) => (
-        <span key={index} style={{ "--petal": index } as CSSProperties}>
+        <span
+          key={index}
+          style={{
+            "--petal": index,
+            "--petal-x": `${(index * 17 + 7) % 96}%`,
+            "--petal-size": `${20 + (index % 4) * 9}px`,
+            "--petal-opacity": 0.25 + (index % 4) * 0.12,
+            "--petal-duration": `${11 + (index % 5) * 2}s`,
+          } as CSSProperties}
+        >
           <img src={lotusAsset.url} alt="" />
         </span>
       ))}
