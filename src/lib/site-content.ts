@@ -9,8 +9,6 @@ export const navItems = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
-export const pujaJourney = ["Arrival", "Darshan", "Anjali", "Bhog", "Cultural programs", "Celebration"];
-
 export const festivalDates = [
   { date: "16 — 21 OCT", title: "Shri Shri Sharodiya Durga Puja", note: "Friday to Wednesday, 2026" },
   { date: "25 OCT", title: "Shri Shri Kojagari Lakshmi Puja", note: "Sunday, 2026 · 7:00 PM — 9:00 PM" },
