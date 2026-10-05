@@ -155,7 +155,7 @@
   }
 }
 
-html { scroll-behavior: smooth; }
+html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 ::selection { background: var(--vermilion); color: var(--primary-foreground); }
 .eyebrow { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; }
 .site-header { position: fixed; inset: 1.1rem 1.2rem auto; z-index: 60; display: flex; align-items: center; justify-content: space-between; border: 1px solid transparent; padding: .55rem .65rem .55rem 1rem; transition: .35s ease; }
