@@ -21,7 +21,6 @@ export function PageLoader() {
       if (url.origin !== window.location.origin) return;
       if (url.pathname === window.location.pathname) return;
       e.preventDefault();
-      e.stopPropagation();
       if (covering.current) return;
       covering.current = true;
       setPhase("on");
