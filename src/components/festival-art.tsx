@@ -2,12 +2,13 @@ import durgaAsset from "@/assets/durga.png.asset.json";
 import lotusAsset from "@/assets/lotus.png.asset.json";
 import lotusLeafAsset from "@/assets/lotus-with-leaf.png.asset.json";
 import longWaterAsset from "@/assets/long-water.png.asset.json";
+import type { CSSProperties } from "react";
 
 export function FallingPetals() {
   return (
     <div className="petal-field" aria-hidden="true">
       {Array.from({ length: 12 }, (_, index) => (
-        <span key={index} style={{ "--petal": index } as React.CSSProperties}>
+        <span key={index} style={{ "--petal": index } as CSSProperties}>
           <img src={lotusAsset.url} alt="" />
         </span>
       ))}
