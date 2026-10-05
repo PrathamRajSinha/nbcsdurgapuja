@@ -226,3 +226,6 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 @media(max-width:1200px){.brand-text small{display:none}.desktop-nav a{padding:.55rem .6rem}}
 @media(max-width:700px){.site-header{border-radius:1.4rem}.site-header.menu-open{border-radius:0}.brand-text{display:none}.page-watermark{width:70vw;top:5rem;right:-20vw}}
 @media(prefers-reduced-motion:reduce){.page-watermark{animation:none}}
+.intro-sound{position:absolute;left:1.5rem;bottom:1.5rem;display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.1rem;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;background:transparent;cursor:pointer;transition:background .3s,color .3s}
+.intro-sound:hover,.intro-skip:hover{background:var(--gold);color:var(--kali)}.intro-sound svg{width:1rem;height:1rem}
+.intro-reveal.is-leaving .intro-sound{opacity:0}
