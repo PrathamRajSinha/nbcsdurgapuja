@@ -1,9 +1,10 @@
 import { ArrowDown, ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { durgaPujaVenue, festivalDates, impact, pujaJourney } from "@/lib/site-content";
+import { durgaPujaVenue, festivalDates, impact } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
 import { FallingPetals, HeroArtwork, LotusAccent, WaterDivider, WaterRibbon } from "./festival-art";
 import { PageShell } from "./site-chrome";
+import { DurgaPujaJourney } from "./durga-puja-journey";
 
 export function HomePage() {
   return (
@@ -49,13 +50,7 @@ export function HomePage() {
           <WaterRibbon className="puja-water" />
         </section>
 
-        <section className="journey-section">
-          <div className="section-kicker"><span>02</span><p>The Puja experience</p></div>
-          <h2>Come as you are.<br /><em>Leave as one.</em></h2>
-          <div className="journey-track">
-            {pujaJourney.map((step, index) => <div key={step}><span>0{index + 1}</span><strong>{step}</strong></div>)}
-          </div>
-        </section>
+        <DurgaPujaJourney />
 
         <section className="programme-section">
           <div className="programme-heading"><p className="eyebrow">Festival calendar</p><h2>Sacred days,<br />shared moments.</h2></div>
