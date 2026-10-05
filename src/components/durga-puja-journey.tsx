@@ -20,6 +20,11 @@ function setRevealOrigin(event: React.PointerEvent<HTMLElement>) {
   card.style.setProperty("--reveal-size", `${Math.ceil(diameter)}px`);
 }
 
+function parseScheduleLine(detail: string) {
+  const match = detail.match(/^(\d{1,2}:\d{2} [AP]M(?: onwards)?(?: — \d{1,2}:\d{2} [AP]M(?: onwards)?)?) — (.+)$/);
+  return match ? { time: match[1], event: match[2] } : { time: "", event: detail };
+}
+
 export function DurgaPujaJourney() {
   const sectionRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -84,9 +89,7 @@ export function DurgaPujaJourney() {
                   <h3>{name}</h3>
                   <div className="journey-card-events">
                     {details.map((detail) => {
-                      const separator = detail.indexOf(" — ");
-                      const time = separator >= 0 ? detail.slice(0, separator) : "";
-                      const event = separator >= 0 ? detail.slice(separator + 3) : detail;
+                      const { time, event } = parseScheduleLine(detail);
                       return <p key={detail}>{time && <time>{time}</time>}<span>{event}</span></p>;
                     })}
                   </div>
