@@ -18,7 +18,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         festival: "lotus-button rounded-none border border-primary bg-primary text-primary-foreground uppercase tracking-widest shadow-none",
-        ink: "rounded-none border-b border-foreground bg-transparent px-0 text-foreground shadow-none hover:gap-4",
+        ink: "curvy-button border border-foreground bg-transparent text-foreground shadow-none",
         gold: "lotus-button rounded-none border border-gold bg-gold text-kali shadow-none",
         donate: "lotus-button rounded-none border border-vermilion bg-vermilion text-primary-foreground shadow-none",
         navIcon: "rounded-full border border-border/70 bg-background/70 text-foreground shadow-none backdrop-blur-xl hover:bg-background",
