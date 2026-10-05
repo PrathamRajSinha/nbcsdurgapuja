@@ -249,3 +249,4 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .years-section>.years-dancers-low{top:auto;bottom:1.5rem}
 .page-watermark{opacity:.22}}
 @media(prefers-reduced-motion:reduce){.mobile-menu,.mobile-menu nav a{transition:none}}
+.intro-reveal:not(.is-leaving){background:var(--kali)}
