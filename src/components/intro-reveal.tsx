@@ -71,7 +71,7 @@ export function IntroReveal() {
       <div className="intro-curtain intro-curtain-left" />
       <div className="intro-curtain intro-curtain-right" />
       <div className="intro-stage">
-        <video ref={videoRef} src={introAsset.url} playsInline preload="auto" onEnded={() => setPhase("leaving")} onError={() => setPhase("leaving")} />
+        <video ref={videoRef} src={introAsset.url} playsInline preload="auto" onLoadedMetadata={armAutoOpen} onEnded={() => setPhase("leaving")} onError={() => setPhase("leaving")} />
         <img className="intro-logo" src={logoAsset.url} alt="" />
       </div>
       <button type="button" className="intro-sound" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute sound"}>
