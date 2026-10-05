@@ -39,6 +39,11 @@ export function DurgaPujaJourney() {
     let frame = 0;
     const update = () => {
       frame = 0;
+      if (window.matchMedia("(max-width: 700px)").matches) {
+        track.style.transform = "";
+        section.style.removeProperty("--journey-distance");
+        return;
+      }
       const horizontalRange = Math.max(track.scrollWidth - viewport.clientWidth, 0);
       section.style.setProperty("--journey-distance", `${horizontalRange}px`);
       const sectionRect = section.getBoundingClientRect();
