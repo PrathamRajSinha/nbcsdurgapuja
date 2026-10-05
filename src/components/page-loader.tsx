@@ -41,6 +41,7 @@ async function waitForPageToBeReady() {
 export function PageLoader() {
   const router = useRouter();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const routerStatus = useRouterState({ select: (s) => s.status });
   const first = useRef(true);
   const covering = useRef(false);
   const [phase, setPhase] = useState<"idle" | "on" | "leaving">("idle");
@@ -71,6 +72,12 @@ export function PageLoader() {
       first.current = false;
       return;
     }
+    // A pathname can update while its lazy route is still resolving. Keep the
+    // cover solid until the router confirms the destination has committed.
+    if (routerStatus !== "idle") {
+      setPhase("on");
+      return;
+    }
     let cancelled = false;
     const wasCovered = covering.current;
     covering.current = false;
@@ -92,7 +99,7 @@ export function PageLoader() {
       cancelled = true;
       if (finishTimer !== undefined) window.clearTimeout(finishTimer);
     };
-  }, [path]);
+  }, [path, routerStatus]);
 
   return (
     <div
