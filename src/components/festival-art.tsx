@@ -92,8 +92,8 @@ export function WaterRibbon({ className = "" }: { className?: string }) {
 export function LotusBorder({ className = "" }: { className?: string }) {
   const flowers = Array.from({ length: 13 }, (_, index) => ({
     asset: index % 3 === 1 ? lotusLeafAsset : lotusAsset,
-    size: 58 + ((index * 19) % 54),
-    offset: -12 + ((index * 23) % 31),
+    size: 68 + ((index * 19) % 58),
+    offset: -22 + ((index * 23) % 29),
     rotation: -20 + ((index * 29) % 43),
     duration: 4.6 + (index % 5) * 0.7,
     delay: -(index % 6) * 0.8,
