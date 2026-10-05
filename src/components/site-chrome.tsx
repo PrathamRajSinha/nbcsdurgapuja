@@ -4,7 +4,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { navItems, placeholderContact } from "@/lib/site-content";
 import logoAsset from "@/assets/logo.png.asset.json";
-import { DancerBorder } from "./festival-art";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -65,7 +64,6 @@ export function PageShell({ children }: { children: ReactNode }) {
 export function SiteFooter() {
   return (
     <footer className="site-footer">
-      <DancerBorder />
       <div className="footer-inner">
         <div className="footer-brand"><img src={logoAsset.url} alt="NBCS emblem" /><p>North Bangalore<br />Cultural Samithi</p></div>
         <div><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2></div>
