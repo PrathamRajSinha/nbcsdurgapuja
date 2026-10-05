@@ -75,7 +75,7 @@ export function DurgaPujaJourney() {
         <div className="journey-heading">
           <div className="section-kicker"><span>02</span><p>16 — 21 October 2026</p></div>
           <h2>Six sacred days.<br /><em>One celebration.</em></h2>
-          <p className="journey-scroll-note">Scroll to explore</p>
+          <p className="journey-scroll-note"><span className="note-desktop">Scroll to explore</span><span className="note-mobile">Swipe to explore →</span></p>
         </div>
         <div className="journey-viewport" ref={viewportRef}>
           <div className="journey-track" ref={trackRef}>

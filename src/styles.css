@@ -270,3 +270,4 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .journey-card{scroll-snap-align:center}
 .journey-scroll-note{display:block!important;padding:0 1.5rem;margin-top:.5rem}
 }
+.note-mobile{display:none}@media(max-width:700px){.note-desktop{display:none}.note-mobile{display:inline}}
