@@ -16,8 +16,21 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.body.classList.add("menu-is-open");
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.classList.remove("menu-is-open");
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
   return (
-    <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
+    <header className={`site-header ${scrolled ? "is-scrolled" : ""} ${open ? "menu-open" : ""}`}>
       <Link to="/" className="brand-lockup" aria-label="NBCS home">
         <img src={logoAsset.url} alt="NBCS emblem" />
         <span>NBCS</span>
