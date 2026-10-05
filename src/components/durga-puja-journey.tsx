@@ -39,10 +39,11 @@ export function DurgaPujaJourney() {
     let frame = 0;
     const update = () => {
       frame = 0;
+      const horizontalRange = Math.max(track.scrollWidth - viewport.clientWidth, 0);
+      section.style.setProperty("--journey-distance", `${horizontalRange}px`);
       const sectionRect = section.getBoundingClientRect();
       const scrollRange = Math.max(section.offsetHeight - window.innerHeight, 1);
       const progress = Math.min(Math.max(-sectionRect.top / scrollRange, 0), 1);
-      const horizontalRange = Math.max(track.scrollWidth - viewport.clientWidth, 0);
       track.style.transform = `translate3d(${-progress * horizontalRange}px, 0, 0)`;
     };
     const requestUpdate = () => {
