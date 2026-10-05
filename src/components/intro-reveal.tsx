@@ -22,9 +22,20 @@ export function IntroReveal() {
     const video = videoRef.current;
     if (phase !== "playing" || !video) return;
     video.muted = false;
-    // Browser blocked sound: wait for one tap so the video plays from the start with sound.
-    video.play().catch(() => setNeedsTap(true));
+    // Browser blocked sound: fall back to muted autoplay so the video still runs and the curtains open on their own.
+    video.play().catch(() => {
+      video.muted = true;
+      setMuted(true);
+      video.play().catch(() => setNeedsTap(true));
+    });
   }, [phase]);
+
+  // Safety net: if "ended" never fires (stalled playback), open the curtains just after the video's length.
+  const armAutoOpen = () => {
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+    window.setTimeout(() => setPhase((p) => (p === "playing" ? "leaving" : p)), video.duration * 1000 + 800);
+  };
 
   useEffect(() => {
     if (phase !== "leaving") return;
@@ -60,7 +71,7 @@ export function IntroReveal() {
       <div className="intro-curtain intro-curtain-left" />
       <div className="intro-curtain intro-curtain-right" />
       <div className="intro-stage">
-        <video ref={videoRef} src={introAsset.url} playsInline preload="auto" onEnded={() => setPhase("leaving")} onError={() => setPhase("leaving")} />
+        <video ref={videoRef} src={introAsset.url} playsInline preload="auto" onLoadedMetadata={armAutoOpen} onEnded={() => setPhase("leaving")} onError={() => setPhase("leaving")} />
         <img className="intro-logo" src={logoAsset.url} alt="" />
       </div>
       <button type="button" className="intro-sound" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute sound"}>
