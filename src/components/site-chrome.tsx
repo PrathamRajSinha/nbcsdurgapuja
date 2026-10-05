@@ -58,7 +58,7 @@ export function SiteFooter() {
         <div><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2></div>
         <div className="footer-links">{navItems.map((item) => <Link key={item.href} to={item.href}>{item.label}<ArrowUpRight /></Link>)}</div>
       </div>
-      <div className="footer-bottom"><span>{placeholderContact.email}</span><span>© NBCS</span></div>
+      <div className="footer-bottom"><a href={`mailto:${placeholderContact.email}`}>{placeholderContact.email}</a><span>© NBCS</span></div>
     </footer>
   );
 }
