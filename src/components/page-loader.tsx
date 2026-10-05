@@ -3,6 +3,40 @@ import { useRouter, useRouterState } from "@tanstack/react-router";
 import logoAsset from "@/assets/logo.png.asset.json";
 
 const COVER_MS = 480;
+const READY_TIMEOUT_MS = 6000;
+
+function nextPaint() {
+  return new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+  });
+}
+
+async function waitForPageToBeReady() {
+  const fontReady = "fonts" in document ? document.fonts.ready : Promise.resolve();
+  const visibleImages = Array.from(document.images).filter((image) => {
+    const bounds = image.getBoundingClientRect();
+    return bounds.bottom > 0 && bounds.top < window.innerHeight * 1.25;
+  });
+  const imageReady = Promise.all(
+    visibleImages.map(async (image) => {
+      if (!image.complete) {
+        await new Promise<void>((resolve) => {
+          image.addEventListener("load", () => resolve(), { once: true });
+          image.addEventListener("error", () => resolve(), { once: true });
+        });
+      }
+      if (typeof image.decode === "function") {
+        await image.decode().catch(() => undefined);
+      }
+    }),
+  );
+
+  await Promise.race([
+    Promise.all([fontReady, imageReady, nextPaint()]),
+    new Promise<void>((resolve) => window.setTimeout(resolve, READY_TIMEOUT_MS)),
+  ]);
+  await nextPaint();
+}
 
 export function PageLoader() {
   const router = useRouter();
@@ -37,16 +71,26 @@ export function PageLoader() {
       first.current = false;
       return;
     }
+    let cancelled = false;
     const wasCovered = covering.current;
     covering.current = false;
     setPhase("on");
     window.scrollTo(0, 0);
-    const hold = wasCovered ? 350 : 650;
-    const t1 = window.setTimeout(() => setPhase("leaving"), hold);
-    const t2 = window.setTimeout(() => setPhase("idle"), hold + 850);
+    let finishTimer: number | undefined;
+
+    const revealReadyPage = async () => {
+      await waitForPageToBeReady();
+      if (cancelled) return;
+      if (!wasCovered) await new Promise<void>((resolve) => window.setTimeout(resolve, 250));
+      if (cancelled) return;
+      setPhase("leaving");
+      finishTimer = window.setTimeout(() => setPhase("idle"), 850);
+    };
+    void revealReadyPage();
+
     return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
+      cancelled = true;
+      if (finishTimer !== undefined) window.clearTimeout(finishTimer);
     };
   }, [path]);
 
