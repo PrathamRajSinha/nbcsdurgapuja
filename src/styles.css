@@ -255,7 +255,7 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .placeholder-band>article h2::after{content:"";position:absolute;left:0;bottom:0;width:3.5rem;height:2px;background:var(--gold)}
 .band-body{margin-top:1.15rem;display:grid;gap:.6rem}
 .placeholder-band .band-body p{margin-top:0}
-.placeholder-band .band-date{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in oklab,var(--gold) 72%,var(--foreground))}
+.placeholder-band .band-date{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in oklab,var(--gold) 60%,var(--foreground))}
 .placeholder-band .band-event{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.8rem;align-items:baseline;color:var(--muted-foreground);line-height:1.55}
 .placeholder-band .band-event strong{font-size:.85rem;font-weight:800;letter-spacing:.03em;color:var(--foreground);white-space:nowrap}
 .placeholder-band .band-note{color:var(--muted-foreground);line-height:1.7}
