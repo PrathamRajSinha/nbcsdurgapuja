@@ -1,2 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router"; import { InnerPage } from "@/components/inner-page";
-export const Route=createFileRoute("/about")({head:()=>({meta:[{title:"About NBCS"},{name:"description",content:"Learn about North Bangalore Cultural Samithi and its inclusive cultural community."},{property:"og:title",content:"About NBCS"},{property:"og:description",content:"49 years of culture, community and celebration."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <InnerPage label="North Bangalore Cultural Samithi" title="49 years together" lead="NBCS aims at inclusion in all its diversity, spreading peace, harmony and cultural unity through festivals and community." blocks={[{title:"Our story",copy:"[DETAILED NBCS HISTORY]"},{title:"Our community",copy:"People from all walks, castes, communities and religions participate in our festivities."},{title:"Our activities",copy:"[CULTURAL AND COMMUNITY INITIATIVES]"}]}/>});
+import { createFileRoute } from "@tanstack/react-router";
+import { InnerPage } from "@/components/inner-page";
+
+export const Route = createFileRoute("/about")({
+  head: () => ({ meta: [
+    { title: "About NBCS" },
+    { name: "description", content: "North Bangalore Cultural Samithi welcomes families to its 49th year celebration." },
+    { property: "og:title", content: "About NBCS" },
+    { property: "og:description", content: "North Bangalore Cultural Samithi's 49th year celebration in 2026." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
+  component: () => <InnerPage label="North Bangalore Cultural Samithi" title="49th year celebration" lead="We invite you and your family to join Shri Shri Sharodiya Durga Puja 2026 and share in the festivities and fun." blocks={[
+    { title: "Durga Puja", copy: "16–21 October 2026\nMahalakshmipuram, Bengaluru" },
+    { title: "Kali Mandir", copy: "8A, FTI Colony, Nandini Layout, Bengaluru — 560 096" },
+    { title: "With gratitude", copy: "Your presence and sincere cooperation make our puja and cultural programmes more meaningful and joyful." },
+  ]} />,
+});

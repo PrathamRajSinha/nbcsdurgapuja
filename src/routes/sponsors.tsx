@@ -1,2 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router"; import { InnerPage } from "@/components/inner-page";
-export const Route=createFileRoute("/sponsors")({head:()=>({meta:[{title:"Sponsors & Advertisements | NBCS"},{name:"description",content:"Support and advertise with North Bangalore Cultural Samithi."},{property:"og:title",content:"Sponsors & Advertisements | NBCS"},{property:"og:description",content:"Partner with NBCS cultural celebrations."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <InnerPage label="Partner with us" title="Shared celebration" lead="Help sustain a much-loved community celebration through sponsorship or our annual souvenir." blocks={[{title:"Become a sponsor",copy:"[SPONSORSHIP PACKAGES]"},{title:"Advertise",copy:"[ADVERTISEMENT OPPORTUNITIES]"},{title:"Annual souvenir",copy:"Articles, stories, photography and artwork from our contributors."}]} action="Contact details coming soon"/>});
+import { createFileRoute } from "@tanstack/react-router";
+import { InnerPage } from "@/components/inner-page";
+import { placeholderContact } from "@/lib/site-content";
+
+export const Route = createFileRoute("/sponsors")({
+  head: () => ({ meta: [
+    { title: "Support NBCS" },
+    { name: "description", content: "Support North Bangalore Cultural Samithi's 49th year celebration." },
+    { property: "og:title", content: "Support NBCS" },
+    { property: "og:description", content: "Get in touch with NBCS for the 2026 celebration." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
+  component: () => <InnerPage label="49th year celebration" title="Celebrate with us" lead="Your presence and sincere cooperation make our puja and cultural programmes more meaningful and joyful." blocks={[
+    { title: "Call", copy: placeholderContact.phone },
+    { title: "Email", copy: placeholderContact.email },
+    { title: "Visit online", copy: "www.nbcskalibari.com" },
+  ]} />,
+});
