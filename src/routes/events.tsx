@@ -1,2 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router"; import { InnerPage } from "@/components/inner-page";
-export const Route=createFileRoute("/events")({head:()=>({meta:[{title:"Events & Schedule | NBCS"},{name:"description",content:"NBCS Puja and cultural programme schedule."},{property:"og:title",content:"Events & Schedule | NBCS"},{property:"og:description",content:"Puja, food, music, dance and community events."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <InnerPage label="Festival calendar" title="Events & schedule" lead="A living programme of puja, food, music, dance and community." blocks={[{title:"Puja",copy:"[PUJA EVENT SCHEDULE]"},{title:"Culture",copy:"[CULTURAL PROGRAMME SCHEDULE]"},{title:"Community",copy:"[COMMUNITY EVENT SCHEDULE]"}]}/>});
+import { createFileRoute } from "@tanstack/react-router";
+import { InnerPage } from "@/components/inner-page";
+import { festivalDates } from "@/lib/site-content";
+
+export const Route = createFileRoute("/events")({
+  head: () => ({ meta: [
+    { title: "2026 Puja Calendar | NBCS" },
+    { name: "description", content: "NBCS Durga, Lakshmi, Shyama, Jagadhatri and Saraswati Puja dates for 2026–27." },
+    { property: "og:title", content: "2026 Puja Calendar | NBCS" },
+    { property: "og:description", content: "The official NBCS festival dates and timings." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
+  component: () => <InnerPage label="49th year celebration" title="Puja calendar 2026–27" lead="Join North Bangalore Cultural Samithi for the sacred days and shared celebrations ahead." blocks={festivalDates.map((event) => ({ title: `${event.date} · ${event.title}`, copy: event.note }))} />,
+});

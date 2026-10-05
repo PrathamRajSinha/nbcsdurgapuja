@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { festivalDates, impact, pujaJourney } from "@/lib/site-content";
+import { durgaPujaVenue, festivalDates, impact, pujaJourney } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
 import { FallingPetals, HeroArtwork, LotusAccent, WaterDivider, WaterRibbon } from "./festival-art";
 import { PageShell } from "./site-chrome";
@@ -28,7 +28,7 @@ export function HomePage() {
           <WaterDivider />
           <div className="years-number">49</div>
           <div className="years-copy">
-            <p className="eyebrow">Since 48 years of community</p>
+            <p className="eyebrow">49th year celebration · 2026</p>
             <h2>Years of culture,<br />community & celebration.</h2>
             <p>North Bangalore Cultural Samithi is a social community rooted in inclusion, peace, harmony and cultural unity.</p>
             <Button variant="ink" asChild><a href="/about">Our story <ArrowRight /></a></Button>
@@ -41,9 +41,9 @@ export function HomePage() {
           <div className="puja-title"><p>Five days of devotion,<br />art & togetherness</p><h2>Durga<br />Puja</h2></div>
           <div className="puja-visual"><img src={durgaAsset.url} alt="Traditional illustration of Durga Maa with her lion" /></div>
           <div className="puja-details">
-            <div><CalendarDays /><span>27 September — 2 October 2025</span></div>
-            <div><MapPin /><span>[VENUE TO BE ANNOUNCED]</span></div>
-            <p>People from every walk of life come together for five days of festivities and cultural celebration.</p>
+            <div><CalendarDays /><span>16 — 21 October 2026</span></div>
+            <div><MapPin /><span>{durgaPujaVenue.name}, Mahalakshmipuram</span></div>
+            <p>Join us for the 49th year celebration of Shri Shri Sharodiya Durga Puja—six days of festivities and cultural programmes.</p>
             <Button variant="festival" size="xl" asChild><a href="/durga-puja">Explore Durga Puja <ArrowRight /></a></Button>
           </div>
           <WaterRibbon className="puja-water" />
@@ -72,7 +72,7 @@ export function HomePage() {
 
         <section className="kali-teaser">
           <LotusAccent />
-          <div><p className="eyebrow">A deeper devotion</p><h2>Kali Bari</h2><p>[KALI BARI INTRODUCTION — CONTENT COMING SOON]</p><Button variant="gold" size="xl" asChild><a href="/kali-bari">Visit Kali Bari <ArrowRight /></a></Button></div>
+          <div><p className="eyebrow">A deeper devotion</p><h2>Kali Bari</h2><p>Visit Kali Mandir at FTI Colony, Nandini Layout for Lakshmi, Shyama, Jagadhatri and Saraswati Puja.</p><Button variant="gold" size="xl" asChild><a href="/kali-bari">Visit Kali Bari <ArrowRight /></a></Button></div>
         </section>
 
         <section className="donation-section" id="donate">
