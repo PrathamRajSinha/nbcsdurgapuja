@@ -14,7 +14,7 @@ export function IntroReveal() {
     sessionStorage.setItem("nbcs-intro", "1");
     setPhase("playing");
     document.body.classList.add("menu-is-open");
-    const fallback = window.setTimeout(() => setPhase("leaving"), 11000);
+    const fallback = window.setTimeout(() => setPhase("leaving"), 16000);
     return () => window.clearTimeout(fallback);
   }, []);
 
