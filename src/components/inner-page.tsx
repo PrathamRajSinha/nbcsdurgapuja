@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageShell } from "./site-chrome";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { DancerBorder, FallingPetals } from "./festival-art";
 
 type PageBlock = { title: string; copy: string };
@@ -10,6 +11,7 @@ export function InnerPage({ label, title, lead, blocks, action }: { label: strin
     <PageShell>
       <main className="inner-page">
         <FallingPetals />
+        <img className="page-watermark" src={logoAsset.url} alt="" aria-hidden="true" />
         <p className="eyebrow page-label">{label}</p>
         <h1>{title}</h1>
         <p className="lead">{lead}</p>
