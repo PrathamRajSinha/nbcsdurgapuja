@@ -5,13 +5,13 @@ import logoAsset from "@/assets/logo.png.asset.json";
 
 /** Opening video (with sound) shown once per session, then curtains open to reveal the site. */
 export function IntroReveal() {
-  const [phase, setPhase] = useState<"hidden" | "playing" | "leaving">("hidden");
+  const [phase, setPhase] = useState<"pending" | "hidden" | "playing" | "leaving">("pending");
   const [muted, setMuted] = useState(false);
   const [needsTap, setNeedsTap] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (sessionStorage.getItem("nbcs-intro") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (sessionStorage.getItem("nbcs-intro") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setPhase("hidden"); return; }
     sessionStorage.setItem("nbcs-intro", "1");
     setPhase("playing");
     document.body.classList.add("menu-is-open");
@@ -54,6 +54,7 @@ export function IntroReveal() {
   };
 
   if (phase === "hidden") return null;
+  if (phase === "pending") return <div className="intro-reveal"><div className="intro-curtain intro-curtain-left" /><div className="intro-curtain intro-curtain-right" /></div>;
   return (
     <div className={`intro-reveal ${phase === "leaving" ? "is-leaving" : ""}`}>
       <div className="intro-curtain intro-curtain-left" />

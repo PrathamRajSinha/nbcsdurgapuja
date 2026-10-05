@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Heart, Menu, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
@@ -14,6 +15,9 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -47,15 +51,16 @@ export function SiteHeader() {
           {open ? <X /> : <Menu />}
         </Button>
       </div>
-      {open && (
-        <div className="mobile-menu">
+      {mounted && createPortal(
+        <div className={`mobile-menu ${open ? "is-open" : ""}`} aria-hidden={!open}>
           <nav aria-label="Mobile navigation">
             {navItems.map((item, index) => (
               <Link key={item.href} to={item.href} onClick={() => setOpen(false)}><small>0{index + 1}</small>{item.label}</Link>
             ))}
           </nav>
           <p><img className="menu-logo" src={logoAsset.url} alt="" />North Bangalore Cultural Samithi<br />Durga Puja & Kali Bari</p>
-        </div>
+        </div>,
+        document.body,
       )}
     </header>
   );
