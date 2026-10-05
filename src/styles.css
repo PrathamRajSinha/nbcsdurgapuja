@@ -284,4 +284,4 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .logo-spinner{width:6rem;height:6rem;object-fit:contain;animation:logo-pulse 1.2s ease-in-out infinite}
 .intro-wait-logo{position:absolute;left:50%;top:50%;margin:-3rem 0 0 -3rem;z-index:3}
 @keyframes logo-pulse{0%,100%{transform:scale(.94) rotate(-4deg);opacity:.85}50%{transform:scale(1.04) rotate(4deg);opacity:1}}
-@media (prefers-reduced-motion:reduce){.page-loader img,.logo-spinner{animation:none}}
+@media (prefers-reduced-motion:reduce){.page-loader img,.logo-spinner{animation:none}.page-loader.is-on,.page-loader.is-leaving{transition:opacity .2s ease,clip-path none}.page-loader.is-leaving{clip-path:inset(0 0 0 0)}.page-loader.is-leaving img{transition:opacity .2s ease;transform:none}}
