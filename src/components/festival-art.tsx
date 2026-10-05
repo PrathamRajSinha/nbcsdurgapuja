@@ -52,6 +52,7 @@ export function HeroArtwork() {
       art.style.setProperty("--pointer-y", "0");
     };
 
+    if (window.matchMedia("(hover: none), (max-width: 700px)").matches) return;
     hero.addEventListener("pointermove", move);
     hero.addEventListener("pointerleave", reset);
     return () => {
