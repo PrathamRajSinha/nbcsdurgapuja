@@ -26,7 +26,7 @@ export function HomePage() {
         </section>
 
         <section className="years-section" id="story">
-          <DancerBorder />
+          <DancerBorder className="years-dancers" />
           <div className="years-number">49</div>
           <div className="years-copy">
             <p className="eyebrow">49th year celebration · 2026</p>

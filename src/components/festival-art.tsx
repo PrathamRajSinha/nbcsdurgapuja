@@ -2,6 +2,8 @@ import durgaAsset from "@/assets/durga.png.asset.json";
 import dancersAsset from "@/assets/dhunuchi-dancers.png.asset.json";
 import lotusAsset from "@/assets/lotus.png.asset.json";
 import lotusLeafAsset from "@/assets/lotus-with-leaf.png.asset.json";
+import longWaterAsset from "@/assets/long-water.png.asset.json";
+import waterAsset from "@/assets/water.png.asset.json";
 import { useEffect, useRef, type CSSProperties } from "react";
 
 export function FallingPetals() {
@@ -66,7 +68,21 @@ export function HeroArtwork() {
       <div className="alpana alpana-two">✦</div>
       <div className="hero-lotus-layer"><img className="hero-lotus" src={lotusLeafAsset.url} alt="" /></div>
       <div className="hero-durga-layer"><img className="hero-durga" src={durgaAsset.url} alt="" /></div>
-      <DancerBorder className="hero-dancers" />
+      <WaterRibbon className="hero-water" />
+    </div>
+  );
+}
+
+export function WaterRibbon({ className = "" }: { className?: string }) {
+  const images = Array.from({ length: 8 }, (_, index) => index % 2 === 0 ? longWaterAsset : waterAsset);
+
+  return (
+    <div className={`water-ribbon ${className}`} aria-hidden="true">
+      <div className="water-ribbon-track">
+        {images.map((asset, index) => (
+          <img key={`${asset.asset_id}-${index}`} className={index % 3 !== 0 ? "is-flipped" : ""} src={asset.url} alt="" />
+        ))}
+      </div>
     </div>
   );
 }
