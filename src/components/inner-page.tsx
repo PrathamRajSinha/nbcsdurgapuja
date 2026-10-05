@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageShell } from "./site-chrome";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { DancerBorder, FallingPetals } from "./festival-art";
 
 type PageBlock = { title: string; copy: string };
