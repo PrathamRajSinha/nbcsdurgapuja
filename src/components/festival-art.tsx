@@ -89,6 +89,36 @@ export function WaterRibbon({ className = "" }: { className?: string }) {
   );
 }
 
+export function LotusBorder({ className = "" }: { className?: string }) {
+  const flowers = Array.from({ length: 13 }, (_, index) => ({
+    asset: index % 3 === 1 ? lotusLeafAsset : lotusAsset,
+    size: 58 + ((index * 19) % 54),
+    offset: -12 + ((index * 23) % 31),
+    rotation: -20 + ((index * 29) % 43),
+    duration: 4.6 + (index % 5) * 0.7,
+    delay: -(index % 6) * 0.8,
+  }));
+
+  return (
+    <div className={`lotus-border ${className}`} aria-hidden="true">
+      {flowers.map((flower, index) => (
+        <span
+          key={`${flower.asset.asset_id}-${index}`}
+          style={{
+            "--lotus-size": `${flower.size}px`,
+            "--lotus-offset": `${flower.offset}px`,
+            "--lotus-rotation": `${flower.rotation}deg`,
+            "--lotus-duration": `${flower.duration}s`,
+            "--lotus-delay": `${flower.delay}s`,
+          } as CSSProperties}
+        >
+          <img src={flower.asset.url} alt="" />
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function LotusAccent({ className = "" }: { className?: string }) {
   return <img className={`lotus-accent ${className}`} src={lotusLeafAsset.url} alt="" aria-hidden="true" />;
 }
