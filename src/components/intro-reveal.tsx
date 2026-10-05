@@ -7,6 +7,7 @@ import logoAsset from "@/assets/logo.png.asset.json";
 export function IntroReveal() {
   const [phase, setPhase] = useState<"hidden" | "playing" | "leaving">("hidden");
   const [muted, setMuted] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -14,8 +15,6 @@ export function IntroReveal() {
     sessionStorage.setItem("nbcs-intro", "1");
     setPhase("playing");
     document.body.classList.add("menu-is-open");
-    const fallback = window.setTimeout(() => setPhase("leaving"), 16000);
-    return () => window.clearTimeout(fallback);
   }, []);
 
   // Try to play with sound; browsers may block that until the visitor interacts, so fall back to muted.
@@ -23,11 +22,8 @@ export function IntroReveal() {
     const video = videoRef.current;
     if (phase !== "playing" || !video) return;
     video.muted = false;
-    video.play().catch(() => {
-      video.muted = true;
-      setMuted(true);
-      video.play().catch(() => {});
-    });
+    // Browser blocked sound: wait for one tap so the video plays from the start with sound.
+    video.play().catch(() => setNeedsTap(true));
   }, [phase]);
 
   useEffect(() => {
@@ -47,18 +43,33 @@ export function IntroReveal() {
     if (video.paused) video.play().catch(() => {});
   };
 
+  const startWithSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    setNeedsTap(false);
+    video.muted = false;
+    setMuted(false);
+    video.currentTime = 0;
+    video.play().catch(() => setPhase("leaving"));
+  };
+
   if (phase === "hidden") return null;
   return (
     <div className={`intro-reveal ${phase === "leaving" ? "is-leaving" : ""}`}>
       <div className="intro-curtain intro-curtain-left" />
       <div className="intro-curtain intro-curtain-right" />
       <div className="intro-stage">
-        <video ref={videoRef} src={introAsset.url} playsInline preload="auto" onEnded={() => setPhase("leaving")} />
+        <video ref={videoRef} src={introAsset.url} playsInline preload="auto" onEnded={() => setPhase("leaving")} onError={() => setPhase("leaving")} />
         <img className="intro-logo" src={logoAsset.url} alt="" />
       </div>
       <button type="button" className="intro-sound" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute sound"}>
         {muted ? <VolumeX /> : <Volume2 />}<span>{muted ? "Sound on" : "Mute"}</span>
       </button>
+      {needsTap && (
+        <button type="button" className="intro-tap" onClick={startWithSound}>
+          <Volume2 /><span>Tap to begin</span>
+        </button>
+      )}
       <button type="button" className="intro-skip" onClick={() => setPhase("leaving")}>Skip intro</button>
     </div>
   );
