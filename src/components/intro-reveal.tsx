@@ -3,6 +3,9 @@ import { Volume2, VolumeX } from "lucide-react";
 import introAsset from "@/assets/intro-dancer.mp4.asset.json";
 import logoAsset from "@/assets/logo.png.asset.json";
 
+/** Seconds into the intro clip where its motion and sound end (measured; after this it's a still, silent frame). */
+const INTRO_CONTENT_END_S = 10.25;
+
 /** Opening video (with sound) shown once per session, then curtains open to reveal the site. */
 export function IntroReveal() {
   const [phase, setPhase] = useState<"pending" | "hidden" | "playing" | "leaving">("pending");
@@ -30,19 +33,37 @@ export function IntroReveal() {
     });
   }, [phase]);
 
-  // Safety net: if "ended" never fires (stalled playback), open the curtains just after the video's length.
+  // The clip's motion and sound stop at ~10.2s (the rest is a frozen, silent frame), so open the curtains there.
+  const contentEnd = (video: HTMLVideoElement) =>
+    Math.min(INTRO_CONTENT_END_S, Number.isFinite(video.duration) ? video.duration : INTRO_CONTENT_END_S);
+
+  // Safety net: if playback stalls, open the curtains shortly after the content should have finished.
   const armAutoOpen = () => {
     const video = videoRef.current;
-    if (!video || !Number.isFinite(video.duration)) return;
-    window.setTimeout(() => setPhase((p) => (p === "playing" ? "leaving" : p)), video.duration * 1000 + 800);
+    if (!video) return;
+    window.setTimeout(() => setPhase((p) => (p === "playing" ? "leaving" : p)), contentEnd(video) * 1000 + 1500);
   };
+
+  const checkContentEnd = () => {
+    const video = videoRef.current;
+    if (video && video.currentTime >= contentEnd(video)) setPhase((p) => (p === "playing" ? "leaving" : p));
+  };
+
+  // Poll every frame while playing so the curtains open right as the motion stops (timeupdate is too coarse).
+  useEffect(() => {
+    if (phase !== "playing") return;
+    let raf = 0;
+    const tick = () => { checkContentEnd(); raf = window.requestAnimationFrame(tick); };
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
+  }, [phase]);
 
   useEffect(() => {
     if (phase !== "leaving") return;
     document.body.classList.remove("menu-is-open");
     const v = videoRef.current;
     if (v) v.pause();
-    const t = window.setTimeout(() => setPhase("hidden"), 1300);
+    const t = window.setTimeout(() => setPhase("hidden"), 950);
     return () => window.clearTimeout(t);
   }, [phase]);
 
