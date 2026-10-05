@@ -199,7 +199,7 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 /* Intro reveal */
 .intro-reveal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;pointer-events:auto}
 .intro-curtain{position:absolute;top:0;bottom:0;width:50.5%;background:var(--kali);transition:transform 1.2s cubic-bezier(.76,0,.24,1)}
-.intro-curtain-left{left:0;border-right:2px solid var(--gold)}.intro-curtain-right{right:0;border-left:2px solid var(--gold)}
+.intro-curtain-left{left:0}.intro-curtain-right{right:0}
 .intro-stage{position:relative;height:min(92svh,150vw);aspect-ratio:9/16;transition:opacity .6s ease,transform 1s ease}
 .intro-stage video{width:100%;height:100%;object-fit:cover;border-radius:1.2rem;box-shadow:0 0 0 1px color-mix(in oklab,var(--gold) 60%,transparent),0 30px 80px -20px color-mix(in oklab,var(--foreground) 70%,transparent)}
 .intro-logo{position:absolute;left:50%;bottom:-1.6rem;width:4.5rem;transform:translateX(-50%);filter:drop-shadow(0 6px 14px color-mix(in oklab,var(--foreground) 50%,transparent))}
