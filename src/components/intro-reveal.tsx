@@ -22,9 +22,20 @@ export function IntroReveal() {
     const video = videoRef.current;
     if (phase !== "playing" || !video) return;
     video.muted = false;
-    // Browser blocked sound: wait for one tap so the video plays from the start with sound.
-    video.play().catch(() => setNeedsTap(true));
+    // Browser blocked sound: fall back to muted autoplay so the video still runs and the curtains open on their own.
+    video.play().catch(() => {
+      video.muted = true;
+      setMuted(true);
+      video.play().catch(() => setNeedsTap(true));
+    });
   }, [phase]);
+
+  // Safety net: if "ended" never fires (stalled playback), open the curtains just after the video's length.
+  const armAutoOpen = () => {
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+    window.setTimeout(() => setPhase((p) => (p === "playing" ? "leaving" : p)), video.duration * 1000 + 800);
+  };
 
   useEffect(() => {
     if (phase !== "leaving") return;
