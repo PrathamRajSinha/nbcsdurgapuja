@@ -32,7 +32,7 @@ export function SiteHeader() {
     <header className={`site-header ${scrolled ? "is-scrolled" : ""} ${open ? "menu-open" : ""}`}>
       <Link to="/" className="brand-lockup" aria-label="NBCS home">
         <span className="brand-emblem"><img src={logoAsset.url} alt="NBCS emblem" /></span>
-        <span className="brand-text"><strong>NBCS</strong><small>Est. 49 years · Bengaluru</small></span>
+        <span className="brand-text"><strong>NBCS</strong><small>49th year · Bengaluru</small></span>
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">
         {navItems.slice(0, 7).map((item) => (
