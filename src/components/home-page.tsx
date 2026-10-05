@@ -2,7 +2,7 @@ import { ArrowDown, ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { durgaPujaVenue, festivalDates, impact } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
-import { FallingPetals, HeroArtwork, LotusAccent, LotusBorder, WaterDivider } from "./festival-art";
+import { DancerBorder, FallingPetals, HeroArtwork, LotusAccent } from "./festival-art";
 import { PageShell } from "./site-chrome";
 import { DurgaPujaJourney } from "./durga-puja-journey";
 
@@ -26,7 +26,7 @@ export function HomePage() {
         </section>
 
         <section className="years-section" id="story">
-          <WaterDivider />
+          <DancerBorder />
           <div className="years-number">49</div>
           <div className="years-copy">
             <p className="eyebrow">49th year celebration · 2026</p>
@@ -47,7 +47,7 @@ export function HomePage() {
             <p>Join us for the 49th year celebration of Shri Shri Sharodiya Durga Puja—six days of festivities and cultural programmes.</p>
             <Button variant="festival" size="xl" asChild><a href="/durga-puja">Explore Durga Puja <ArrowRight /></a></Button>
           </div>
-          <LotusBorder className="puja-lotuses" />
+          <DancerBorder className="puja-dancers" />
         </section>
 
         <DurgaPujaJourney />
