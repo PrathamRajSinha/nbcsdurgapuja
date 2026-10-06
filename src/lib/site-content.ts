@@ -1,3 +1,16 @@
+import saveTheDates from "@/assets/nbcs-save-the-dates.pdf.asset.json";
+import grandRevealOne from "@/assets/nbcs-grand-reveal-1.pdf.asset.json";
+import grandRevealTwo from "@/assets/nbcs-grand-reveal-2.pdf.asset.json";
+import eventBanner from "@/assets/nbcs-event-banner.pdf.asset.json";
+import mahaShashti from "@/assets/nbcs-maha-shashti-16-oct.pdf.asset.json";
+import mahaSaptami from "@/assets/nbcs-maha-saptami-17-oct.pdf.asset.json";
+import mahaAshtamiDandiya from "@/assets/nbcs-maha-ashtami-18-oct-dandiya.pdf.asset.json";
+import mahaAshtamiSandhi from "@/assets/nbcs-maha-ashtami-19-oct.pdf.asset.json";
+import mahaNavami from "@/assets/nbcs-maha-navami-20-oct.pdf.asset.json";
+import vijayaDashami from "@/assets/nbcs-vijaya-dashami-21-oct.pdf.asset.json";
+import anandamela from "@/assets/nbcs-anandamela.pdf.asset.json";
+import dhunachiDance from "@/assets/nbcs-dhunachi-dance.pdf.asset.json";
+
 export const navItems = [
   { label: "Home", href: "/" },
   { label: "Durga Puja", href: "/durga-puja" },
@@ -110,4 +123,21 @@ export const footerLinks: FooterLink[] = [
     icon: "phone",
     wide: true,
   })),
+];
+
+export type PujaDownload = { label: string; href: string };
+
+export const pujaDownloads: PujaDownload[] = [
+  { label: "Save the Dates — Sharodiya Durga Puja 2026", href: saveTheDates.url },
+  { label: "Grand Reveal — The Lotus Unveils Maa Durga", href: grandRevealOne.url },
+  { label: "Grand Reveal — 49th Year Puja Celebration", href: grandRevealTwo.url },
+  { label: "49th Year Celebration — Event Banner", href: eventBanner.url },
+  { label: "Maha Shashti · Friday 16 October", href: mahaShashti.url },
+  { label: "Maha Saptami · Saturday 17 October", href: mahaSaptami.url },
+  { label: "Maha Ashtami · Sunday 18 October — Dandiya Night", href: mahaAshtamiDandiya.url },
+  { label: "Maha Ashtami & Sandhi · Monday 19 October", href: mahaAshtamiSandhi.url },
+  { label: "Maha Navami · Tuesday 20 October", href: mahaNavami.url },
+  { label: "Vijaya Dashami · Wednesday 21 October", href: vijayaDashami.url },
+  { label: "Anandamela — Home-made Bengali Food", href: anandamela.url },
+  { label: "Dhunachi Dance · Navami", href: dhunachiDance.url },
 ];
