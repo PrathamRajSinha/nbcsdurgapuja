@@ -320,3 +320,99 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .download-title{font-size:1.05rem}
 .download-btn{padding:.45rem .7rem;font-size:.62rem;letter-spacing:.08em}
 }
+
+/* ===== Donation / Sankalpa page ===== */
+.donate-page{position:relative;min-height:100vh;max-width:66rem;margin:0 auto;padding:10rem 7vw 6rem;background:var(--background);overflow:hidden}
+.donate-eyebrow{color:var(--vermilion)}
+.donate-corner-lotus{position:absolute;right:-9%;top:15rem;width:min(24rem,38vw);opacity:.15;transform:rotate(14deg);pointer-events:none}
+.donate-head h1{margin:1.6rem 0;font-family:var(--font-display);font-size:clamp(3.4rem,8vw,7.5rem);line-height:.92;color:var(--foreground)}
+.donate-head h1 em{font-style:italic;color:var(--vermilion)}
+.donate-head .lead{max-width:46rem;font-family:var(--font-display);font-size:clamp(1.25rem,2.4vw,1.8rem);line-height:1.4;color:var(--muted-foreground)}
+.donate-step{margin-top:4.5rem}
+.donate-step>h2{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.6rem;font-family:var(--font-display);font-size:clamp(1.8rem,3.6vw,2.6rem);color:var(--foreground)}
+.donate-step>h2 span{font-family:var(--font-sans);font-size:.66rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:color-mix(in oklab,var(--gold) 80%,var(--foreground))}
+.donate-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem}
+.donate-choice{text-align:left;padding:1.7rem 1.6rem 1.4rem;border:1px solid color-mix(in oklab,var(--foreground) 26%,transparent);border-radius:1.7rem .45rem 1.7rem .45rem;background:color-mix(in oklab,var(--card) 75%,transparent);cursor:pointer;transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .35s,background .35s,box-shadow .5s cubic-bezier(.16,1,.3,1)}
+.donate-choice:hover{transform:translateY(-3px);border-color:color-mix(in oklab,var(--vermilion) 55%,transparent)}
+.donate-choice strong{display:block;font-family:var(--font-display);font-size:1.65rem;line-height:1.1;color:var(--foreground)}
+.donate-choice span{display:block;margin-top:.55rem;color:var(--muted-foreground);line-height:1.6}
+.donate-choice em{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.1rem;font-style:normal;font-size:.64rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in oklab,var(--foreground) 55%,transparent)}
+.donate-choice em svg{width:.9rem;height:.9rem}
+.donate-choice.is-active{border-color:var(--vermilion);background:color-mix(in oklab,var(--vermilion) 6%,var(--card));box-shadow:.45rem .5rem 0 color-mix(in oklab,var(--vermilion) 14%,transparent)}
+.donate-choice.is-active em{color:var(--vermilion)}
+.donate-amounts{display:flex;flex-wrap:wrap;gap:.85rem;align-items:center}
+.donate-amount{padding:.8rem 1.6rem;border:1px solid color-mix(in oklab,var(--foreground) 30%,transparent);border-radius:999px;background:transparent;font-family:var(--font-display);font-size:1.3rem;color:var(--foreground);cursor:pointer;transition:background .35s,color .35s,border-color .35s,transform .4s cubic-bezier(.16,1,.3,1)}
+.donate-amount:hover{transform:translateY(-2px);border-color:var(--vermilion)}
+.donate-amount.is-active{background:var(--vermilion);border-color:var(--vermilion);color:var(--primary-foreground)}
+.donate-custom{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem .55rem 1.3rem;border:1px dashed color-mix(in oklab,var(--foreground) 38%,transparent);border-radius:999px}
+.donate-custom span{font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in oklab,var(--foreground) 60%,transparent)}
+.donate-custom .rupee{font-family:var(--font-display);font-size:1.3rem;color:var(--foreground)}
+.donate-custom input{width:7.5rem;border:0;background:transparent;outline:none;font-family:var(--font-display);font-size:1.3rem;color:var(--foreground)}
+.donate-custom:focus-within{border-color:var(--vermilion);border-style:solid}
+.donate-hint{margin-top:1.1rem;font-size:.85rem;color:var(--vermilion)}
+.donate-pay{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:3.5rem;align-items:center;margin-top:4.5rem;padding:3rem 0;border-block:1px solid color-mix(in oklab,var(--gold) 35%,transparent)}
+.donate-qr-frame{position:relative;display:inline-block;padding:1.1rem;background:var(--card);border:1px solid color-mix(in oklab,var(--gold) 55%,transparent);border-radius:.5rem;box-shadow:.55rem .6rem 0 color-mix(in oklab,var(--gold) 20%,transparent)}
+.donate-qr-frame img{display:block;width:min(20rem,100%);height:auto}
+.donate-qr-caption{margin-top:1.2rem;font-size:.66rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:color-mix(in oklab,var(--foreground) 60%,transparent)}
+.donate-upi-row{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin-top:.6rem;font-size:.95rem;color:var(--muted-foreground)}
+.donate-upi-row strong{font-weight:700;color:var(--foreground);overflow-wrap:anywhere}
+.donate-copy{padding:.5rem 1.1rem;border:1px solid color-mix(in oklab,var(--gold) 60%,transparent);border-radius:999px;background:transparent;font-size:.64rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in oklab,var(--gold) 82%,var(--foreground));cursor:pointer;transition:background .35s,color .35s,border-color .35s}
+.donate-copy:hover{border-color:var(--gold)}
+.donate-copy.is-copied{background:var(--gold);border-color:var(--gold);color:var(--kali);animation:donate-pop .45s cubic-bezier(.16,1,.3,1)}
+@keyframes donate-pop{0%{transform:scale(.9)}55%{transform:scale(1.08)}100%{transform:scale(1)}}
+.donate-qr-download{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.4rem;font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--vermilion);text-decoration:none;border-bottom:1px solid color-mix(in oklab,var(--vermilion) 40%,transparent);padding-bottom:.25rem}
+.donate-qr-download svg{width:.95rem;height:.95rem}
+.donate-qr-download:hover{color:color-mix(in oklab,var(--vermilion) 75%,var(--foreground))}
+.donate-pay-status{font-size:.9rem;color:var(--muted-foreground)}
+.donate-pay-status strong{color:var(--foreground)}
+.donate-actions h3{margin:1.5rem 0 1.1rem;font-family:var(--font-display);font-size:1.9rem;color:var(--foreground)}
+.donate-apps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem}
+.donate-app{display:flex;align-items:center;justify-content:center;gap:.55rem;padding:1.1rem 1rem;border:1px solid color-mix(in oklab,var(--foreground) 28%,transparent);border-radius:.45rem 1.35rem .45rem 1.35rem;background:var(--card);font-weight:700;font-size:.92rem;color:var(--foreground);text-decoration:none;transition:transform .45s cubic-bezier(.16,1,.3,1),border-color .35s,color .35s,box-shadow .45s cubic-bezier(.16,1,.3,1)}
+.donate-app svg{width:1.05rem;height:1.05rem}
+.donate-app:hover{transform:translateY(-3px);border-color:var(--vermilion);color:var(--vermilion);box-shadow:.3rem .35rem 0 color-mix(in oklab,var(--vermilion) 12%,transparent)}
+.donate-app.is-disabled{pointer-events:none;opacity:.45}
+.donate-fineprint{margin-top:1.2rem;font-size:.78rem;line-height:1.65;color:var(--muted-foreground)}
+.donate-water{position:relative;height:3.4rem;margin:3.5rem 0 2.75rem;opacity:.5}
+.donate-paid{text-align:center}
+.donate-paid h2{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);color:var(--foreground)}
+.donate-paid .donate-paid-copy{max-width:34rem;margin:.9rem auto 1.6rem;color:var(--muted-foreground);line-height:1.7}
+.donate-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem 1.75rem;margin-top:3.25rem;padding-top:3rem;border-top:1px solid color-mix(in oklab,var(--gold) 35%,transparent)}
+.donate-form>h2{grid-column:1/-1;font-family:var(--font-display);font-size:clamp(1.9rem,3.6vw,2.7rem);color:var(--foreground)}
+.donate-form>p{grid-column:1/-1;max-width:40rem;color:var(--muted-foreground);line-height:1.7}
+.donate-field{display:grid;gap:.5rem;align-content:start}
+.donate-field.is-wide{grid-column:1/-1}
+.donate-field label{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in oklab,var(--foreground) 72%,transparent)}
+.donate-field label .req{color:var(--vermilion)}
+.donate-field .field-note{font-size:.72rem;color:color-mix(in oklab,var(--gold) 75%,var(--foreground))}
+.donate-field.is-devotional input{border-color:color-mix(in oklab,var(--gold) 55%,transparent)}
+.donate-field input,.donate-field textarea{width:100%;padding:.85rem 1rem;border:1px solid color-mix(in oklab,var(--foreground) 24%,transparent);border-radius:.45rem;background:color-mix(in oklab,var(--card) 85%,transparent);font-family:var(--font-sans);font-size:.95rem;color:var(--foreground);outline:none;transition:border-color .3s,box-shadow .3s}
+.donate-field textarea{min-height:6rem;resize:vertical}
+.donate-field input:focus,.donate-field textarea:focus{border-color:var(--vermilion);box-shadow:0 0 0 3px color-mix(in oklab,var(--vermilion) 12%,transparent)}
+.donate-form-error{grid-column:1/-1;color:var(--vermilion);font-size:.85rem}
+.donate-form-note{grid-column:1/-1;font-size:.75rem;color:var(--muted-foreground)}
+.donate-submit{grid-column:1/-1;justify-self:start}
+.donate-thanks{text-align:center;padding:3rem 0 1rem;animation:donate-rise .8s cubic-bezier(.16,1,.3,1) both}
+.donate-thanks h1{margin:1.4rem 0;font-family:var(--font-display);font-size:clamp(3rem,7vw,6rem);line-height:.95;color:var(--foreground)}
+.donate-thanks h1 em{font-style:italic;color:var(--vermilion)}
+.donate-thanks-sub{font-family:var(--font-display);font-size:1.4rem;color:var(--muted-foreground)}
+.donate-ref{display:inline-flex;align-items:center;gap:.8rem;margin:2rem 0 1rem;padding:.8rem 1.6rem;border:1px solid color-mix(in oklab,var(--gold) 55%,transparent);border-radius:999px;font-size:.8rem;letter-spacing:.08em;color:var(--muted-foreground);background:color-mix(in oklab,var(--gold) 7%,transparent)}
+.donate-ref strong{font-size:1rem;letter-spacing:.14em;color:var(--foreground)}
+.donate-thanks-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.9rem;margin-top:2.2rem}
+.donate-rise{animation:donate-rise .8s cubic-bezier(.16,1,.3,1) both}
+@keyframes donate-rise{from{opacity:0;transform:translateY(1.4rem)}to{opacity:1;transform:none}}
+@media(max-width:700px){
+.donate-page{padding:7.5rem 1.25rem 4rem}
+.donate-corner-lotus{display:none}
+.donate-choices{grid-template-columns:1fr;gap:1rem}
+.donate-pay{grid-template-columns:1fr;gap:2.5rem;padding:2.25rem 0}
+.donate-actions{order:-1}
+.donate-apps{grid-template-columns:1fr 1fr;gap:.7rem}
+.donate-form{grid-template-columns:1fr;gap:1.2rem;margin-top:2.5rem}
+.donate-upi-row{font-size:.85rem}
+.donate-thanks-actions{flex-direction:column;align-items:center}
+.donate-thanks-actions>a,.donate-thanks-actions>button{width:min(16rem,100%)}
+}
+@media(prefers-reduced-motion:reduce){
+.donate-rise,.donate-thanks,.donate-copy.is-copied{animation:none}
+.donate-choice,.donate-app,.donate-amount{transition:none}
+}
