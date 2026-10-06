@@ -402,8 +402,8 @@ export default function DomeGallery({
   );
 
   useEffect(() => {
-    const dg-scrim = scrimRef.current;
-    if (!dg-scrim) return;
+    const scrim = scrimRef.current;
+    if (!scrim) return;
 
     const close = () => {
       if (performance.now() - openStartedAtRef.current < 250) return;
@@ -537,14 +537,14 @@ export default function DomeGallery({
       });
     };
 
-    dg-scrim.addEventListener('click', close);
+    scrim.addEventListener('click', close);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
     };
     window.addEventListener('keydown', onKey);
 
     return () => {
-      dg-scrim.removeEventListener('click', close);
+      scrim.removeEventListener('click', close);
       window.removeEventListener('keydown', onKey);
     };
   }, [enlargeTransitionMs, openedImageBorderRadius, grayscale]);
