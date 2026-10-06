@@ -169,7 +169,7 @@ function DonationPage() {
             <h1>Thank you for<br /><em>your contribution.</em></h1>
             <p className="donate-thanks-sub">Your details have been received.</p>
             <p className="donate-ref">Reference ID <strong>{reference}</strong></p>
-            <p className="donate-fineprint">Your payment is marked as pending verification. A committee member will confirm it — this screen is not a payment receipt.</p>
+            <p className="donate-fineprint">Please keep this reference ID safe — it helps us find your contribution if you ever have a question.</p>
             <div className="donate-thanks-actions">
               <Button variant="festival" size="xl" asChild><Link to="/">Back to NBCS <ArrowRight /></Link></Button>
               <Button variant="ink" size="xl" onClick={resetAll}>Donate again</Button>
@@ -286,7 +286,7 @@ function DonationPage() {
 
         <section className="donate-paid">
           <h2>Already paid?</h2>
-          <p className="donate-paid-copy">Tell us about your payment so the committee can verify it and thank you personally.</p>
+          <p className="donate-paid-copy">Tell us about your payment so the committee can thank you personally.</p>
           {showForm ? (
             <Button variant="ink" size="xl" onClick={() => document.querySelector(".donate-form")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Go to the form <ArrowRight /></Button>
           ) : (
@@ -300,7 +300,7 @@ function DonationPage() {
             <p>
               {type === "sankalpa"
                 ? "Share your Sankalpa details — your name(s) and gotra are used for the offering."
-                : "Share your details so the committee can verify your donation and acknowledge it."}
+                : "Share your details so the committee can acknowledge your donation."}
             </p>
 
             <div className="donate-field">
@@ -337,11 +337,11 @@ function DonationPage() {
             </div>
 
             {formError && <p className="donate-form-error" role="alert">{formError}</p>}
-            <p className="donate-form-note">Amount: {amount ? `₹${formatINR(amount)}` : "not chosen yet"} · Type: {TYPE_LABEL[type]}. Your payment stays “pending verification” until a committee member confirms it.</p>
+            <p className="donate-form-note">Amount: {amount ? `₹${formatINR(amount)}` : "not chosen yet"} · Type: {TYPE_LABEL[type]}.</p>
 
             <div className="donate-submit">
               <Button variant="donate" size="xl" type="submit" disabled={submitting || !amount}>
-                <Heart /> {submitting ? "Sending…" : "Submit for verification"}
+                <Heart /> {submitting ? "Sending…" : "Submit"}
               </Button>
             </div>
           </form>
