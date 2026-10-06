@@ -165,9 +165,9 @@ function DonationPage() {
           <FallingPetals />
           <LotusAccent className="donate-corner-lotus" />
           <section className="donate-thanks">
-            <p className="eyebrow donate-eyebrow">Offering received</p>
+            <p className="eyebrow donate-eyebrow">Submitted for verification</p>
             <h1>Thank you for<br /><em>your contribution.</em></h1>
-            <p className="donate-thanks-sub">Your details have been received.</p>
+            <p className="donate-thanks-sub">Your details have been received and are awaiting verification by the committee.</p>
             <p className="donate-ref">Reference ID <strong>{reference}</strong></p>
             <p className="donate-fineprint">Please keep this reference ID safe — it helps us find your contribution if you ever have a question.</p>
             <div className="donate-thanks-actions">
@@ -341,7 +341,7 @@ function DonationPage() {
 
             <div className="donate-submit">
               <Button variant="donate" size="xl" type="submit" disabled={submitting || !amount}>
-                <Heart /> {submitting ? "Sending…" : "Submit"}
+                <Heart /> {submitting ? "Sending…" : "Submit for verification"}
               </Button>
             </div>
           </form>
