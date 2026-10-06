@@ -103,6 +103,17 @@ export const instagramSection = {
   reelUrl: "https://www.instagram.com/reel/DcJQYwYvuEj/",
 };
 
+export const galleryCopy = {
+  photoAlt: "NBCS festival celebration",
+  highlights: [
+    { filename: "dsc08644.webp", label: "Dhunuchi Naach", alt: "Dhunuchi dance in front of the Durga Puja stage" },
+    { filename: "dsc06969.webp", label: "Cultural programme", alt: "Dancers performing in traditional red and white attire" },
+    { filename: "dsc08190.webp", label: "Maa Durga", alt: "Durga Puja idols and decorations at NBCS" },
+    { filename: "dsc08319.webp", label: "Bhog & Prasad", alt: "Volunteers serving food at the community celebration" },
+    { filename: "dsc09255.webp", label: "Our community", alt: "Community members gathered for a festival group photograph" },
+  ],
+};
+
 export const madeBy = {
   label: "Made by",
   url: "https://pages.dutaly.com/",
