@@ -1,9 +1,9 @@
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Heart, Menu, X } from "lucide-react";
+import { ArrowUpRight, Heart, IdCard, Menu, X } from "lucide-react";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { navItems, placeholderContact } from "@/lib/site-content";
+import { membershipForm, navItems, placeholderContact } from "@/lib/site-content";
 import logoAsset from "@/assets/logo.png.asset.json";
 
 export function SiteHeader() {
@@ -46,7 +46,14 @@ export function SiteHeader() {
         ))}
       </nav>
       <div className="header-actions">
-        <Button variant="donate" size="lg" asChild><a href="#donate"><Heart /> Donate</a></Button>
+        <Button variant="gold" size="sm" asChild>
+          <a href={membershipForm.url} target="_blank" rel="noopener noreferrer">
+            <IdCard />
+            <span className="label-wide">{membershipForm.label}</span>
+            <span className="label-narrow">{membershipForm.shortLabel}</span>
+          </a>
+        </Button>
+        <Button variant="donate" size="sm" asChild><a href="#donate"><Heart /> Donate</a></Button>
         <Button variant="navIcon" size="icon" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)}>
           {open ? <X /> : <Menu />}
         </Button>
@@ -57,6 +64,7 @@ export function SiteHeader() {
             {navItems.map((item, index) => (
               <Link key={item.href} to={item.href} style={{ "--d": index * 0.04 } as CSSProperties} onClick={() => setOpen(false)}>{item.label}</Link>
             ))}
+            <a href={membershipForm.url} target="_blank" rel="noopener noreferrer" style={{ "--d": navItems.length * 0.04 } as CSSProperties}>{membershipForm.label} <ArrowUpRight /></a>
           </nav>
           <p><img className="menu-logo" src={logoAsset.url} alt="" />North Bangalore Cultural Samithi<br />Durga Puja & Kali Bari</p>
         </div>,
