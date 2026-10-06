@@ -7,7 +7,7 @@ import { PageShell } from "./site-chrome";
 import { CountUp } from "./count-up";
 import { DurgaPujaJourney } from "./durga-puja-journey";
 import AccordionGallery from "./accordion-gallery";
-import { galleryItems } from "@/lib/gallery";
+import { homeGalleryItems } from "@/lib/gallery";
 
 export function HomePage() {
   return (
@@ -64,7 +64,7 @@ export function HomePage() {
         <section className="instagram-section">
           <a className="insta-follow" href={instagramSection.profileUrl} target="_blank" rel="noopener noreferrer">Follow us on Insta <Instagram /></a>
           <div className="home-gallery">
-            <AccordionGallery items={galleryItems} defaultIndex={2} expandRatio={0.5} height={480} accentColor="var(--gold)" overlayColor="#2a0a08" grayscale={false} />
+            <AccordionGallery items={homeGalleryItems} defaultIndex={2} expandRatio={0.5} height={480} accentColor="var(--gold)" overlayColor="var(--kali)" grayscale={false} />
           </div>
           <Button variant="festival" size="xl" asChild><a href="/gallery">See full gallery <ArrowRight /></a></Button>
         </section>
