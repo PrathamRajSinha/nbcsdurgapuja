@@ -273,7 +273,7 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .journey-scroll-note{display:block!important;padding:0 1.5rem;margin-top:.5rem}
 }
 .note-mobile{display:none}@media(max-width:700px){.note-desktop{display:none}.note-mobile{display:inline}}
-@media(max-width:700px){.festival-hero .petal-field{display:block}.petal-field span{opacity:calc(var(--petal-opacity) * .8)}.hero-lotus-layer{display:block;right:21%;left:auto;bottom:-2%;width:38vw;transform:rotate(-12deg)!important}.hero-water{z-index:4;height:15%;bottom:-1%}}
+@media(max-width:700px){.festival-hero .petal-field{display:block}.petal-field span{opacity:calc(var(--petal-opacity) * .8)}.hero-lotus-layer{display:none}.hero-water{z-index:4;height:15%;bottom:-1%}}
 @media(max-width:700px) and (prefers-reduced-motion:reduce){.festival-hero .petal-field{display:none}}
 
 /* Logo loader between pages */
