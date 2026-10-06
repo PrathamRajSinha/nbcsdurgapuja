@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DonateRouteImport } from './routes/donate'
 import { Route as DurgaPujaRouteImport } from './routes/durga-puja'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -31,6 +32,11 @@ const AboutRoute = AboutRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonateRoute = DonateRouteImport.update({
+  id: '/donate',
+  path: '/donate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DurgaPujaRoute = DurgaPujaRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/donate': typeof DonateRoute
   '/durga-puja': typeof DurgaPujaRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/donate': typeof DonateRoute
   '/durga-puja': typeof DurgaPujaRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/donate': typeof DonateRoute
   '/durga-puja': typeof DurgaPujaRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/donate'
     | '/durga-puja'
     | '/events'
     | '/gallery'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/donate'
     | '/durga-puja'
     | '/events'
     | '/gallery'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/donate'
     | '/durga-puja'
     | '/events'
     | '/gallery'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
+  DonateRoute: typeof DonateRoute
   DurgaPujaRoute: typeof DurgaPujaRoute
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donate': {
+      id: '/donate'
+      path: '/donate'
+      fullPath: '/donate'
+      preLoaderRoute: typeof DonateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/durga-puja': {
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
+  DonateRoute: DonateRoute,
   DurgaPujaRoute: DurgaPujaRoute,
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,

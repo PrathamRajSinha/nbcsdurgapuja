@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, Heart, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { durgaPujaVenue, festivalDates, impact } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
@@ -75,8 +75,8 @@ export function HomePage() {
         <section className="donation-section" id="donate">
           <p className="eyebrow">Keep the tradition flowing</p>
           <h2>Every offering becomes<br /><em>a shared celebration.</em></h2>
-          <p>Your support helps NBCS bring culture and community together. The secure donation link will be available soon.</p>
-          <Button variant="donate" size="xl" disabled>Donation link coming soon</Button>
+          <p>Your support helps us continue the traditions, celebrations and community that bring North Bangalore together.</p>
+          <Button variant="donate" size="xl" asChild><a href="/donate">Donate now <Heart /></a></Button>
         </section>
       </main>
     </PageShell>
