@@ -3,8 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Heart, IdCard, Menu, X } from "lucide-react";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { membershipForm, navItems, placeholderContact } from "@/lib/site-content";
+import { madeBy, membershipForm, navItems, placeholderContact } from "@/lib/site-content";
 import logoAsset from "@/assets/logo.png.asset.json";
+import dutalyAsset from "@/assets/dutaly-pages.png.asset.json";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
