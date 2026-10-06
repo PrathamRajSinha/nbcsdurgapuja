@@ -293,3 +293,5 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .intro-wait-logo{position:absolute;left:50%;top:50%;margin:-3rem 0 0 -3rem;z-index:3}
 @keyframes logo-pulse{0%,100%{transform:scale(.94) rotate(-4deg);opacity:.85}50%{transform:scale(1.04) rotate(4deg);opacity:1}}
 @media (prefers-reduced-motion:reduce){.page-loader img,.logo-spinner{animation:none}.page-loader.is-on,.page-loader.is-leaving{transition:opacity .2s ease,clip-path none}.page-loader.is-leaving{clip-path:inset(0 0 0 0)}.page-loader.is-leaving img{transition:opacity .2s ease;transform:none}}
+/* Venue line in the Durga Puja feature opens the location map. */
+.puja-details>a{display:flex;gap:.7rem;align-items:center;padding:1rem 0;border-bottom:1px solid color-mix(in oklab,var(--primary-foreground) 35%,transparent);font-size:.76rem;text-transform:uppercase;color:inherit;text-decoration:none;transition:color .3s ease,gap .3s ease}.puja-details>a:hover{color:var(--gold);gap:.95rem}.puja-details>a .venue-arrow{width:.85rem;opacity:.55;transition:opacity .3s ease,transform .3s ease}.puja-details>a:hover .venue-arrow{opacity:1;transform:translate(.15rem,-.15rem)}
