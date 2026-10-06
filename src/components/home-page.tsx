@@ -54,10 +54,15 @@ export function HomePage() {
 
         <DurgaPujaJourney />
 
-        <section className="programme-section">
-          <div className="programme-heading"><p className="eyebrow">Festival calendar</p><h2>Sacred days,<br />shared moments.</h2></div>
-          <div className="event-list">
-            {festivalDates.map((event) => <a href="/events" key={event.title}><time>{event.date}</time><h3>{event.title}</h3><p>{event.note}</p><ArrowRight /></a>)}
+        <section className="calendar-cta-section">
+          <p className="eyebrow">Festival calendar</p>
+          <Button variant="festival" size="xl" asChild><a href="/events">Festival Calendar <ArrowRight /></a></Button>
+        </section>
+
+        <section className="instagram-section">
+          <a className="insta-follow" href={instagramSection.profileUrl} target="_blank" rel="noopener noreferrer">Follow us on Insta <Instagram /></a>
+          <div className="insta-embed-wrap">
+            <InstagramEmbed url={instagramSection.reelUrl} />
           </div>
         </section>
 
