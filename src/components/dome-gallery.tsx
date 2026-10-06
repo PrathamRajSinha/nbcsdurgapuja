@@ -673,7 +673,7 @@ export default function DomeGallery({
       <div
         ref={rootRef}
         className="dg-sphere-root relative w-full h-full"
-        data-lenis-prevent-touch
+        data-lenis-prevent
         style={
           {
             ['--segments-x' as any]: segments,
