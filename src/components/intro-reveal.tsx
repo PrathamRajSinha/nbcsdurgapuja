@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import introAsset from "@/assets/intro-dancer.mp4.asset.json";
 import logoAsset from "@/assets/logo.png.asset.json";
 
@@ -17,8 +18,23 @@ export function IntroReveal() {
     if (sessionStorage.getItem("nbcs-intro") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setPhase("hidden"); return; }
     sessionStorage.setItem("nbcs-intro", "1");
     setPhase("playing");
-    document.body.classList.add("menu-is-open");
   }, []);
+
+  // Freeze the document through loading, playback and the curtain animation.
+  useEffect(() => {
+    if (phase === "hidden") return;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const previous = { position: body.style.position, top: body.style.top, width: body.style.width, overflow: body.style.overflow };
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+    return () => {
+      Object.assign(body.style, previous);
+      window.scrollTo({ top: scrollY, behavior: "instant" });
+    };
+  }, [phase === "hidden"]);
 
   // Try to play with sound; browsers may block that until the visitor interacts, so fall back to muted.
   useEffect(() => {
@@ -60,7 +76,6 @@ export function IntroReveal() {
 
   useEffect(() => {
     if (phase !== "leaving") return;
-    document.body.classList.remove("menu-is-open");
     const v = videoRef.current;
     if (v) v.pause();
     const t = window.setTimeout(() => setPhase("hidden"), 950);
@@ -86,24 +101,24 @@ export function IntroReveal() {
   };
 
   if (phase === "hidden") return null;
-  if (phase === "pending") return <div className="intro-reveal"><div className="intro-curtain intro-curtain-left" /><div className="intro-curtain intro-curtain-right" /><img className="logo-spinner intro-wait-logo" src={logoAsset.url} alt="" /></div>;
+  if (phase === "pending") return <div className="intro-reveal" data-lenis-prevent><div className="intro-curtain intro-curtain-left" /><div className="intro-curtain intro-curtain-right" /><img className="logo-spinner intro-wait-logo" src={logoAsset.url} alt="" /></div>;
   return (
-    <div className={`intro-reveal ${phase === "leaving" ? "is-leaving" : ""}`}>
+    <div className={`intro-reveal ${phase === "leaving" ? "is-leaving" : ""}`} data-lenis-prevent>
       <div className="intro-curtain intro-curtain-left" />
       <div className="intro-curtain intro-curtain-right" />
       <div className="intro-stage">
         <video ref={videoRef} src={introAsset.url} playsInline preload="auto" onLoadedMetadata={armAutoOpen} onEnded={() => setPhase("leaving")} onError={() => setPhase("leaving")} />
         <img className="intro-logo" src={logoAsset.url} alt="" />
       </div>
-      <button type="button" className="intro-sound" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute sound"}>
+      <Button variant="ghost" type="button" className="intro-sound" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute sound"}>
         {muted ? <VolumeX /> : <Volume2 />}<span>{muted ? "Sound on" : "Mute"}</span>
-      </button>
+      </Button>
       {needsTap && (
-        <button type="button" className="intro-tap" onClick={startWithSound}>
+        <Button variant="ghost" type="button" className="intro-tap" onClick={startWithSound}>
           <Volume2 /><span>Tap to begin</span>
-        </button>
+        </Button>
       )}
-      <button type="button" className="intro-skip" onClick={() => setPhase("leaving")}>Skip intro</button>
+      <Button variant="ghost" type="button" className="intro-skip" onClick={() => setPhase("leaving")}>Skip intro</Button>
     </div>
   );
 }
