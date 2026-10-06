@@ -3,6 +3,7 @@ import { InnerPage } from "@/components/inner-page";
 import { durgaPujaSchedule, durgaPujaVenue } from "@/lib/site-content";
 
 export const Route = createFileRoute("/durga-puja")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Durga Puja 2026 | NBCS" },
     { name: "description", content: "Shri Shri Sharodiya Durga Puja, 16–21 October 2026, by North Bangalore Cultural Samithi." },

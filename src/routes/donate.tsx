@@ -31,6 +31,7 @@ function legacyCopy(text: string) {
 }
 
 export const Route = createFileRoute("/donate")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Donate & Sankalpa | NBCS" },

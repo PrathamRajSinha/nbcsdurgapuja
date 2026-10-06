@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HomePage } from "@/components/home-page";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "NBCS | 49th Year Durga Puja 2026" },
     { name: "description", content: "Experience North Bangalore Cultural Samithi's 49th year Durga Puja, 16–21 October 2026." },

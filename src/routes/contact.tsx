@@ -3,6 +3,7 @@ import { InnerPage } from "@/components/inner-page";
 import { durgaPujaVenue, kaliMandir, placeholderContact } from "@/lib/site-content";
 
 export const Route = createFileRoute("/contact")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Contact | NBCS" },
     { name: "description", content: "Contact North Bangalore Cultural Samithi and find our 2026 puja venues." },
