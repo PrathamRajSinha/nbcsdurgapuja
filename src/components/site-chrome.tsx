@@ -55,7 +55,7 @@ export function SiteHeader() {
         <div className={`mobile-menu ${open ? "is-open" : ""}`} aria-hidden={!open}>
           <nav aria-label="Mobile navigation">
             {navItems.map((item, index) => (
-              <Link key={item.href} to={item.href} style={{ "--d": index * 0.04 } as CSSProperties} onClick={() => setOpen(false)}><small>0{index + 1}</small>{item.label}</Link>
+              <Link key={item.href} to={item.href} style={{ "--d": index * 0.04 } as CSSProperties} onClick={() => setOpen(false)}>{item.label}</Link>
             ))}
           </nav>
           <p><img className="menu-logo" src={logoAsset.url} alt="" />North Bangalore Cultural Samithi<br />Durga Puja & Kali Bari</p>
