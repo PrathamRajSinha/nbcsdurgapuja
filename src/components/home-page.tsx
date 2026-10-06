@@ -2,7 +2,7 @@ import { ArrowDown, ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { durgaPujaVenue, festivalDates, impact } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
-import { DancerBorder, FallingPetals, HeroArtwork, LotusAccent } from "./festival-art";
+import { CloudParallax, DancerBorder, FallingPetals, HeroArtwork, LotusAccent } from "./festival-art";
 import { PageShell } from "./site-chrome";
 import { DurgaPujaJourney } from "./durga-puja-journey";
 
@@ -61,6 +61,7 @@ export function HomePage() {
         </section>
 
         <section className="impact-section">
+          <CloudParallax />
           <p className="eyebrow">Last celebration, in numbers</p>
           <div className="impact-grid">{impact.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}</div>
           <p className="impact-note">A celebration made possible by thousands of neighbours, volunteers, artists and well-wishers.</p>
