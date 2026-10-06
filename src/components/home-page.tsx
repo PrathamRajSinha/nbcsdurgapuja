@@ -68,6 +68,9 @@ export function HomePage() {
 
         <section className="impact-section">
           <CloudParallax />
+          <p className="impact-tagline">{festivalPride.tagline}</p>
+          <p className="impact-estd">{festivalPride.established}</p>
+          <p className="impact-awards">{festivalPride.awards}</p>
           <p className="eyebrow">Last celebration, in numbers</p>
           <div className="impact-grid">{impact.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}</div>
           <p className="impact-note">A celebration made possible by thousands of neighbours, volunteers, artists and well-wishers.</p>
