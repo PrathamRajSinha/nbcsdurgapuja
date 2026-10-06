@@ -54,7 +54,7 @@ export function SiteHeader() {
             <span className="label-narrow">{membershipForm.shortLabel}</span>
           </a>
         </Button>
-        <Button variant="donate" size="sm" asChild><a href="#donate"><Heart /> Donate</a></Button>
+        <Button variant="donate" size="sm" asChild><Link to="/donate"><Heart /> Donate</Link></Button>
         <Button variant="navIcon" size="icon" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)}>
           {open ? <X /> : <Menu />}
         </Button>

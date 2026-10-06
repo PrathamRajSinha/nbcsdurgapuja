@@ -16,3 +16,5 @@
 - Use the paired dhunuchi-dancer artwork for repeating section borders and tie its left-to-right motion to page scroll; this keeps decorative separators consistent and interactive.
 - Keep the route-transition cover mounted until above-the-fold images and fonts are decoded; this prevents unfinished pages appearing after the wipe.
 - Keep scroll-reactive festival decoration in `festival-art.tsx`; this centralizes motion cleanup and reduced-motion handling.
+
+- Donations are submitted through the submitDonation server function (Zod-validated, admin client) into the public.donations table and stored as PENDING_VERIFICATION; there is deliberately no public read path and no payment-success claim in the UI. Why: the committee verifies UPI payments manually and donor data must not be publicly readable.

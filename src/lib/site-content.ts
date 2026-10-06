@@ -1,3 +1,4 @@
+import nbcsUpiQr from "@/assets/nbcs-upi-qr.png.asset.json";
 import saveTheDates from "@/assets/nbcs-save-the-dates.pdf.asset.json";
 import grandRevealOne from "@/assets/nbcs-grand-reveal-1.pdf.asset.json";
 import grandRevealTwo from "@/assets/nbcs-grand-reveal-2.pdf.asset.json";
@@ -100,6 +101,15 @@ export const membershipForm = {
   label: "Become a member",
   shortLabel: "Member",
   url: "https://docs.google.com/forms/d/e/1FAIpQLSdenBiAmhcHMz8Uh-OmhGC7zIEJnsATRH4GhAgeHLksRn-tGg/viewform",
+};
+
+export const donation = {
+  upiId: "bom250801320160@mahb",
+  payeeName: "THE NORTH BANGALORE CULTU",
+  bankName: "Bank of Maharashtra",
+  qrUrl: nbcsUpiQr.url,
+  qrDownloadName: "nbcs-upi-qr.png",
+  presets: [501, 1001, 2501, 5001],
 };
 
 export type FooterLink = {
