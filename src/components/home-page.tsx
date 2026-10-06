@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { durgaPujaVenue, festivalDates, impact } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
@@ -44,7 +44,7 @@ export function HomePage() {
           <div className="puja-visual"><img src={durgaAsset.url} alt="Traditional illustration of Durga Maa with her lion" /></div>
           <div className="puja-details">
             <div><CalendarDays /><span>16 — 21 October 2026</span></div>
-            <div><MapPin /><span>{durgaPujaVenue.name}, Mahalakshmipuram</span></div>
+            <a className="puja-venue" href={durgaPujaVenue.locationUrl} target="_blank" rel="noopener noreferrer"><MapPin /><span>{durgaPujaVenue.name}, Mahalakshmipuram</span><ArrowUpRight className="venue-arrow" /></a>
             <p>Join us for the 49th year celebration of Shri Shri Sharodiya Durga Puja—six days of festivities and cultural programmes.</p>
             <Button variant="festival" size="xl" asChild><a href="/durga-puja">Explore Durga Puja <ArrowRight /></a></Button>
           </div>
