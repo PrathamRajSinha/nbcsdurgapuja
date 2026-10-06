@@ -5,9 +5,9 @@ type ParsedValue = { target: number; suffix: string };
 function parseValue(value: string): ParsedValue | null {
   const match = value.trim().match(/^([\d,]+)\s*(.*)$/);
   if (!match) return null;
-  const target = Number(match[1].replace(/,/g, ""));
+  const target = Number(match[1]?.replace(/,/g, "") ?? "");
   if (!Number.isFinite(target)) return null;
-  return { target, suffix: match[2] };
+  return { target, suffix: match[2] ?? "" };
 }
 
 export function CountUp({ value }: { value: string }) {
