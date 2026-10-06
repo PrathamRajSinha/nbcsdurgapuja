@@ -64,9 +64,14 @@ export const impact = [
   { value: "2", label: "Puja awards" },
 ];
 
+export const contactNumbers = [
+  { label: "Partho", phone: "+91 94483 50752" },
+  { label: "Dhrubo", phone: "+91 98863 30772" },
+];
+
 export const placeholderContact = {
   address: kaliMandir.address,
-  phone: "+91 94483 50752 — Partho · +91 98863 30772 — Dhrubo",
+  phone: contactNumbers.map((person) => `${person.phone} — ${person.label}`).join(" · "),
   email: "northbangaloreculturalsamithi@gmail.com",
   facebook: "https://www.facebook.com/NorthBangaloreCulturalAssociation",
   instagram: "https://www.instagram.com/n.b.c.s",
@@ -83,3 +88,26 @@ export const membershipForm = {
   shortLabel: "Member",
   url: "https://docs.google.com/forms/d/e/1FAIpQLSdenBiAmhcHMz8Uh-OmhGC7zIEJnsATRH4GhAgeHLksRn-tGg/viewform",
 };
+
+export type FooterLink = {
+  label: string;
+  href: string;
+  icon: "facebook" | "instagram" | "globe" | "pin" | "temple" | "member" | "mail" | "phone";
+  wide?: boolean;
+};
+
+export const footerLinks: FooterLink[] = [
+  { label: "Facebook", href: placeholderContact.facebook, icon: "facebook" },
+  { label: "Instagram", href: placeholderContact.instagram, icon: "instagram" },
+  { label: "www.nbcskalibari.com", href: placeholderContact.website, icon: "globe" },
+  { label: "Durga Puja location", href: durgaPujaVenue.locationUrl, icon: "pin" },
+  { label: "Kali Bari location", href: kaliMandir.locationUrl, icon: "temple" },
+  { label: membershipForm.label, href: membershipForm.url, icon: "member" },
+  { label: placeholderContact.email, href: `mailto:${placeholderContact.email}`, icon: "mail", wide: true },
+  ...contactNumbers.map((person): FooterLink => ({
+    label: `${person.label} · ${person.phone}`,
+    href: `tel:${person.phone.replace(/\s/g, "")}`,
+    icon: "phone",
+    wide: true,
+  })),
+];

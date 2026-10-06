@@ -1,9 +1,9 @@
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Heart, IdCard, Menu, X } from "lucide-react";
+import { ArrowUpRight, Facebook, Globe, Heart, IdCard, Instagram, Landmark, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { madeBy, membershipForm, navItems, placeholderContact } from "@/lib/site-content";
+import { footerLinks, madeBy, membershipForm, navItems } from "@/lib/site-content";
 import logoAsset from "@/assets/logo.png.asset.json";
 import dutalyAsset from "@/assets/dutaly-pages.png.asset.json";
 
@@ -79,6 +79,17 @@ export function PageShell({ children }: { children: ReactNode }) {
   return <><SiteHeader />{children}<SiteFooter /></>;
 }
 
+const footerIcons = {
+  facebook: Facebook,
+  instagram: Instagram,
+  globe: Globe,
+  pin: MapPin,
+  temple: Landmark,
+  member: IdCard,
+  mail: Mail,
+  phone: Phone,
+} as const;
+
 export function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -86,16 +97,27 @@ export function SiteFooter() {
         <div className="footer-brand"><img src={logoAsset.url} alt="NBCS emblem" /><p>North Bangalore<br />Cultural Samithi</p></div>
         <div><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2>
           <div className="footer-social">
-            <a href={placeholderContact.facebook} target="_blank" rel="noopener noreferrer">Facebook <ArrowUpRight /></a>
-            <a href={placeholderContact.instagram} target="_blank" rel="noopener noreferrer">Instagram <ArrowUpRight /></a>
-            <a href={placeholderContact.website} target="_blank" rel="noopener noreferrer">www.nbcskalibari.com <ArrowUpRight /></a>
+            {footerLinks.map((link) => {
+              const Icon = footerIcons[link.icon];
+              const external = link.href.startsWith("http");
+              return (
+                <a
+                  key={link.href}
+                  className={link.wide ? "is-wide" : undefined}
+                  href={link.href}
+                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  <Icon />
+                  <span>{link.label}</span>
+                </a>
+              );
+            })}
           </div>
         </div>
         <div className="footer-links">{navItems.map((item) => <Link key={item.href} to={item.href}>{item.label}<ArrowUpRight /></Link>)}</div>
       </div>
       <div className="footer-bottom">
-        <a href={`mailto:${placeholderContact.email}`}>{placeholderContact.email}</a>
-        <span>© NBCS</span>
+        <span>© {new Date().getFullYear()} North Bangalore Cultural Samithi</span>
         <a className="footer-madeby" href={madeBy.url} target="_blank" rel="noopener noreferrer">
           <span>{madeBy.label}</span>
           <img src={dutalyAsset.url} alt="Dutaly Pages" />
