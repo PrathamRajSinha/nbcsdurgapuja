@@ -1,10 +1,11 @@
-import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, Heart, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, Heart, Instagram, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { durgaPujaVenue, festivalDates, impact } from "@/lib/site-content";
+import { durgaPujaVenue, festivalPride, impact, instagramSection } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
 import { CloudParallax, DancerBorder, FallingPetals, HeroArtwork, LotusAccent } from "./festival-art";
 import { PageShell } from "./site-chrome";
 import { DurgaPujaJourney } from "./durga-puja-journey";
+import { InstagramEmbed } from "./instagram-embed";
 
 export function HomePage() {
   return (
