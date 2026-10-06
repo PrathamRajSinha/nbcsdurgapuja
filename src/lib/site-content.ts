@@ -70,3 +70,9 @@ export const placeholderContact = {
   email: "northbangaloreculturalsamithi@gmail.com",
   facebook: "/bangalore.kalibari",
 };
+
+export const membershipForm = {
+  label: "Become a member",
+  shortLabel: "Member",
+  url: "https://docs.google.com/forms/d/e/1FAIpQLSdenBiAmhcHMz8Uh-OmhGC7zIEJnsATRH4GhAgeHLksRn-tGg/viewform",
+};
