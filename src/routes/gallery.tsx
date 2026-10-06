@@ -3,6 +3,9 @@ import { Instagram } from "lucide-react";
 import { PageShell } from "@/components/site-chrome";
 import { galleryItems } from "@/lib/gallery";
 import { instagramSection } from "@/lib/site-content";
+import DomeGallery from "@/components/dome-gallery";
+
+const domeImages = galleryItems.map((item) => ({ src: item.image, alt: item.alt || item.label }));
 
 export const Route = createFileRoute("/gallery")({
   staticData: { sitemap: true },
@@ -25,13 +28,13 @@ export const Route = createFileRoute("/gallery")({
 function GalleryPage() {
   return (
     <PageShell>
-      <main className="inner-page gallery-page">
+      <main className="gallery-dome-page">
+        <div className="gallery-dome-heading">
         <p className="eyebrow">49th year celebration</p>
         <h1>Moments held in light</h1>
-        <div className="gallery-grid">
-          {galleryItems.map((item) => (
-            <figure key={item.label}><img src={item.image} alt={item.alt} loading="lazy" /><figcaption>{item.label}</figcaption></figure>
-          ))}
+        </div>
+        <div className="gallery-dome">
+          <DomeGallery images={domeImages} grayscale={false} minRadius={380} fit={0.65} padFactor={0.12} overlayBlurColor="var(--kali)" openedImageWidth="min(560px, 82vw)" openedImageHeight="min(560px, 50svh)" imageBorderRadius="8px" openedImageBorderRadius="8px" />
         </div>
         <a className="insta-follow" href={instagramSection.profileUrl} target="_blank" rel="noopener noreferrer">Follow us on Insta <Instagram /></a>
       </main>
