@@ -131,7 +131,7 @@ function DonationPage() {
           amount,
           name: form.name,
           names: form.names,
-          gotra: form.gotra,
+          gotra: type === "sankalpa" ? form.gotra : "",
           upiTransactionId: form.upiTransactionId,
           phone: form.phone,
           email: form.email,
@@ -312,11 +312,13 @@ function DonationPage() {
               {type === "sankalpa" && <p className="field-note">Name(s) the Sankalpa is made for.</p>}
               <input id="donate-names" name="names" value={form.names} onChange={(e) => setForm({ ...form, names: e.target.value })} />
             </div>
-            <div className={`donate-field ${type === "sankalpa" ? "is-devotional" : ""}`}>
-              <label htmlFor="donate-gotra">Gotra</label>
-              {type === "sankalpa" && <p className="field-note">Your family gotra, if you know it.</p>}
-              <input id="donate-gotra" name="gotra" value={form.gotra} onChange={(e) => setForm({ ...form, gotra: e.target.value })} />
-            </div>
+            {type === "sankalpa" && (
+              <div className="donate-field is-devotional">
+                <label htmlFor="donate-gotra">Gotra</label>
+                <p className="field-note">Your family gotra, if you know it.</p>
+                <input id="donate-gotra" name="gotra" value={form.gotra} onChange={(e) => setForm({ ...form, gotra: e.target.value })} />
+              </div>
+            )}
             <div className="donate-field">
               <label htmlFor="donate-utr">UPI Transaction ID <span className="req">*</span></label>
               <input id="donate-utr" name="upiTransactionId" autoComplete="off" placeholder="From your UPI app, e.g. 4052xxxxxx" value={form.upiTransactionId} onChange={(e) => setForm({ ...form, upiTransactionId: e.target.value })} required />
