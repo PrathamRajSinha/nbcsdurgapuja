@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { InnerPage } from "@/components/inner-page";
+import { Instagram } from "lucide-react";
+import { PageShell } from "@/components/page-shell";
+import { galleryItems } from "@/lib/gallery";
+import { instagramSection } from "@/lib/site-content";
 
 export const Route = createFileRoute("/gallery")({
   staticData: { sitemap: true },
@@ -16,9 +19,22 @@ export const Route = createFileRoute("/gallery")({
     { name: "twitter:image", content: "https://nbcskalibari.com/nbcs-share.jpg" },
     { name: "twitter:card", content: "summary_large_image" },
   ] }),
-  component: () => <InnerPage label="49th year celebration" title="Moments held in light" lead="Shri Shri Sharodiya Durga Puja returns from 16–21 October 2026." blocks={[
-    { title: "Opening Ceremony", copy: "16 October 2026 · 8:00 PM onwards" },
-    { title: "Cultural Programmes", copy: "17–20 October 2026 · 8:00 PM" },
-    { title: "Vijaya Sanmilani", copy: "21 October 2026 · 7:30 PM onwards" },
-  ]} />,
+  component: GalleryPage,
 });
+
+function GalleryPage() {
+  return (
+    <PageShell>
+      <main className="inner-page gallery-page">
+        <p className="eyebrow">49th year celebration</p>
+        <h1>Moments held in light</h1>
+        <div className="gallery-grid">
+          {galleryItems.map((item) => (
+            <figure key={item.label}><img src={item.image} alt={item.alt} loading="lazy" /><figcaption>{item.label}</figcaption></figure>
+          ))}
+        </div>
+        <a className="insta-follow" href={instagramSection.profileUrl} target="_blank" rel="noopener noreferrer">Follow us on Insta <Instagram /></a>
+      </main>
+    </PageShell>
+  );
+}

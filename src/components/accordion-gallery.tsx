@@ -1,5 +1,5 @@
 
-import { useRef, useEffect, useState, useCallback, CSSProperties, KeyboardEvent, MouseEvent } from 'react';
+import { useRef, useEffect, useState, useCallback, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react';
 import { gsap } from 'gsap';
 
 export interface AccordionGalleryItem {
