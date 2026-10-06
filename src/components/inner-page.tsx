@@ -54,7 +54,7 @@ function BlockLine({ line }: { line: string }) {
   return <p className="band-note">{line}</p>;
 }
 
-export function InnerPage({ label, title, lead, blocks, action }: { label: string; title: string; lead: string; blocks: PageBlock[]; action?: string }) {
+export function InnerPage({ label, title, lead, blocks, action, extra }: { label: string; title: string; lead: string; blocks: PageBlock[]; action?: string; extra?: ReactNode }) {
   return (
     <PageShell>
       <main className="inner-page">
@@ -75,6 +75,7 @@ export function InnerPage({ label, title, lead, blocks, action }: { label: strin
             </article>
           ))}
         </div>
+        {extra}
         {action && <Button variant="festival" size="xl" disabled className="mt-10">{action} <ArrowRight /></Button>}
         <DancerBorder />
       </main>

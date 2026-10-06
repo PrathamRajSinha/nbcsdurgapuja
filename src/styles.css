@@ -301,3 +301,22 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 
 /* Contact details under the footer emblem. */
 .footer-contact{display:flex;flex-direction:column;margin-top:2.5rem}.footer-contact a{display:flex;align-items:center;gap:.55rem;padding:.55rem 0;border-bottom:1px solid color-mix(in oklab,var(--primary-foreground) 14%,transparent);font-size:.68rem;letter-spacing:.03em;text-transform:none;color:color-mix(in oklab,var(--gold) 82%,white);transition:color .3s ease,transform .3s ease}.footer-contact a:hover{color:var(--primary-foreground);transform:translateX(.25rem)}.footer-contact a span{overflow-wrap:anywhere}.footer-contact svg{width:.95rem;height:.95rem;flex:none;color:var(--gold);transition:transform .3s ease}.footer-contact a:hover svg{transform:translate(.12rem,-.12rem)}
+
+/* ---------- downloadable banners ---------- */
+.puja-downloads{margin-top:5rem;padding-bottom:3.5rem}
+.puja-downloads h2{position:relative;padding-bottom:.6rem;font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--vermilion)}
+.puja-downloads h2::after{content:"";position:absolute;left:0;bottom:0;width:3.5rem;height:2px;background:var(--gold)}
+.download-list{list-style:none;margin:1.6rem 0 0;padding:0;border-top:1px solid color-mix(in oklab,var(--foreground) 14%,transparent)}
+.download-list li{display:flex;align-items:center;justify-content:space-between;gap:1.25rem;padding:1rem .25rem;border-bottom:1px solid color-mix(in oklab,var(--foreground) 14%,transparent);transition:padding-left .45s cubic-bezier(.16,1,.3,1),background .45s}
+.download-list li:hover{padding-left:.9rem;background:color-mix(in oklab,var(--gold) 8%,transparent)}
+.download-title{font-family:var(--font-display);font-size:1.3rem;line-height:1.3;color:var(--foreground)}
+.download-btn{display:inline-flex;align-items:center;gap:.5rem;flex:none;padding:.5rem .95rem;border:1px solid color-mix(in oklab,var(--gold) 55%,transparent);border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in oklab,var(--gold) 78%,var(--foreground));transition:background .4s,color .4s,transform .4s}
+.download-btn svg{width:1rem;height:1rem;transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.download-btn:hover{background:var(--gold);color:var(--kali);transform:translateY(-2px)}
+.download-btn:hover svg{transform:translateY(2px)}
+@media(max-width:700px){
+.puja-downloads{margin-top:3.5rem;padding-bottom:2.75rem}
+.download-list li{gap:.75rem;padding:.85rem .1rem}
+.download-title{font-size:1.05rem}
+.download-btn{padding:.45rem .7rem;font-size:.62rem;letter-spacing:.08em}
+}
