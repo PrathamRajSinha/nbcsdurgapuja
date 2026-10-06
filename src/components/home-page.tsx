@@ -4,6 +4,7 @@ import { durgaPujaVenue, festivalPride, impact, instagramSection } from "@/lib/s
 import durgaAsset from "@/assets/durga.png.asset.json";
 import { CloudParallax, DancerBorder, FallingPetals, HeroArtwork, LotusAccent } from "./festival-art";
 import { PageShell } from "./site-chrome";
+import { CountUp } from "./count-up";
 import { DurgaPujaJourney } from "./durga-puja-journey";
 import { InstagramEmbed } from "./instagram-embed";
 
@@ -68,11 +69,15 @@ export function HomePage() {
 
         <section className="impact-section">
           <CloudParallax />
-          <p className="impact-tagline">{festivalPride.tagline}</p>
+          <p className="impact-tagline">
+            {festivalPride.tagline.split(" ").map((word, index) => (
+              <span key={`${word}-${index}`} className={index < 3 ? "tag-gold" : "tag-verm"}>{word}{" "}</span>
+            ))}
+          </p>
           <p className="impact-estd">{festivalPride.established}</p>
           <p className="impact-awards">{festivalPride.awards}</p>
           <p className="eyebrow">Last celebration, in numbers</p>
-          <div className="impact-grid">{impact.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}</div>
+          <div className="impact-grid">{impact.map((item) => <div key={item.label}><strong><CountUp value={item.value} /></strong><span>{item.label}</span></div>)}</div>
           <p className="impact-note">A celebration made possible by thousands of neighbours, volunteers, artists and well-wishers.</p>
         </section>
 
