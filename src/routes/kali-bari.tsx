@@ -11,7 +11,9 @@ export const Route = createFileRoute("/kali-bari")({
     { property: "og:description", content: "Puja dates, location and visiting information for NBCS Kali Mandir." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
-  ] }),
+  ],
+  scripts: [{ type: "application/ld+json", children: JSON.stringify({ "@context": "https://schema.org", "@type": "HinduTemple", name: "NBCS Kali Mandir", address: kaliMandir.address, url: "https://nbcskalibari.com/kali-bari", hasMap: kaliMandir.locationUrl }) }],
+  }),
   component: () => <InnerPage label="NBCS Kali Mandir" title="A deeper devotion" lead={kaliMandir.address} blocks={[
     { title: "Kojagari Lakshmi Puja", copy: "25 October 2026 · Sunday\n7:00 PM — 9:00 PM" },
     { title: "Shyama Puja", copy: "8 November 2026 · Sunday\n9:00 PM — 3:00 AM" },
