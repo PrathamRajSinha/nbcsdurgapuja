@@ -101,6 +101,36 @@ function Dashboard() {
 
   const total = filtered.reduce((n, r) => n + r.amount, 0);
 
+  function downloadCsv() {
+    const esc = (v: string | number | null) => {
+      const s = v == null ? "" : String(v);
+      return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = ["Reference ID", "Type", "Amount (INR)", "Name", "Names", "Gotra", "Mobile", "Email", "UPI Transaction ID", "Submitted At", "Verification Status", "Verified At", "Note"];
+    const lines = filtered.map((r) => [
+      r.reference_id,
+      r.donation_type === "sankalpa" ? "Sankalpa" : "Donation",
+      r.amount,
+      r.name,
+      r.names,
+      r.gotra,
+      r.phone,
+      r.email,
+      r.upi_transaction_id,
+      new Date(r.created_at).toLocaleString("en-IN"),
+      r.payment_status === "VERIFIED" ? "Verified" : "Pending verification",
+      r.verified_at ? new Date(r.verified_at).toLocaleString("en-IN") : "",
+      r.note,
+    ].map(esc).join(","));
+    const csv = "\uFEFF" + [header.map(esc).join(","), ...lines].join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `nbcs-donations-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
