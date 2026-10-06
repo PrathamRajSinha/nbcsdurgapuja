@@ -131,7 +131,7 @@ function DonationPage() {
           amount,
           name: form.name,
           names: form.names,
-          gotra: form.gotra,
+          gotra: type === "sankalpa" ? form.gotra : "",
           upiTransactionId: form.upiTransactionId,
           phone: form.phone,
           email: form.email,
