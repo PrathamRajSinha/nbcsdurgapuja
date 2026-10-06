@@ -135,7 +135,12 @@ function Dashboard() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl text-foreground">Donation submissions</h1>
-        <Button variant="outline" onClick={() => supabase.auth.signOut()}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="outline" onClick={downloadCsv} disabled={filtered.length === 0}>
+            <Download className="mr-2 h-4 w-4" />Download CSV
+          </Button>
+          <Button variant="outline" onClick={() => supabase.auth.signOut()}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>
+        </div>
       </div>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
