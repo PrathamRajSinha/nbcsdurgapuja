@@ -16,10 +16,14 @@ export function CountUp({ value }: { value: string }) {
   const [display, setDisplay] = useState(() => (parsed ? "0" : value));
 
   useEffect(() => {
-    if (!parsed) return;
+    const parsed = parseValue(value);
+    if (!parsed) {
+      setDisplay(value);
+      return;
+    }
     const el = ref.current;
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      if (parsed) setDisplay(value);
+      setDisplay(value);
       return;
     }
 
