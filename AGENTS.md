@@ -15,3 +15,4 @@
 - Use one root-level Lenis instance for site-wide smooth scrolling; this keeps scroll-linked sections synchronized and avoids competing controllers.
 - Use the paired dhunuchi-dancer artwork for repeating section borders and tie its left-to-right motion to page scroll; this keeps decorative separators consistent and interactive.
 - Keep the route-transition cover mounted until above-the-fold images and fonts are decoded; this prevents unfinished pages appearing after the wipe.
+- Keep scroll-reactive festival decoration in `festival-art.tsx`; this centralizes motion cleanup and reduced-motion handling.

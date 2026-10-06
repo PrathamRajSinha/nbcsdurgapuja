@@ -4,6 +4,7 @@ import lotusAsset from "@/assets/lotus.png.asset.json";
 import lotusLeafAsset from "@/assets/lotus-with-leaf.png.asset.json";
 import longWaterAsset from "@/assets/long-water.png.asset.json";
 import waterAsset from "@/assets/water.png.asset.json";
+import cloudsAsset from "@/assets/clouds.png.asset.json";
 import { useEffect, useRef, type CSSProperties } from "react";
 
 export function FallingPetals() {
@@ -118,6 +119,45 @@ export function DancerBorder({ className = "" }: { className?: string }) {
       style={{ "--dancer-art": `url(${dancersAsset.url})` } as CSSProperties}
       aria-hidden="true"
     />
+  );
+}
+
+export function CloudParallax() {
+  const cloudsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const clouds = cloudsRef.current;
+    const section = clouds?.closest(".impact-section");
+    if (!clouds || !section || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const bounds = section.getBoundingClientRect();
+        const progress = (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height) - 0.5;
+        clouds.style.setProperty("--cloud-far", `${progress * 36}px`);
+        clouds.style.setProperty("--cloud-mid", `${progress * -58}px`);
+        clouds.style.setProperty("--cloud-near", `${progress * 82}px`);
+      });
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  return (
+    <div ref={cloudsRef} className="impact-clouds" aria-hidden="true">
+      <img className="impact-cloud impact-cloud-far" src={cloudsAsset.url} alt="" />
+      <img className="impact-cloud impact-cloud-mid" src={cloudsAsset.url} alt="" />
+      <img className="impact-cloud impact-cloud-near" src={cloudsAsset.url} alt="" />
+    </div>
   );
 }
 
