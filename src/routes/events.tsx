@@ -3,6 +3,7 @@ import { InnerPage } from "@/components/inner-page";
 import { festivalDates } from "@/lib/site-content";
 
 export const Route = createFileRoute("/events")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "2026 Puja Calendar | NBCS" },
     { name: "description", content: "NBCS Durga, Lakshmi, Shyama, Jagadhatri and Saraswati Puja dates for 2026–27." },

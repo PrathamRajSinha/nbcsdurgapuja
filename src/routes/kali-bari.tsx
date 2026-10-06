@@ -3,6 +3,7 @@ import { InnerPage } from "@/components/inner-page";
 import { kaliMandir } from "@/lib/site-content";
 
 export const Route = createFileRoute("/kali-bari")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Kali Mandir | NBCS" },
     { name: "description", content: "NBCS Kali Mandir in Nandini Layout, Bengaluru." },

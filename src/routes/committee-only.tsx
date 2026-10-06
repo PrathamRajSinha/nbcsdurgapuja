@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { PageShell } from "@/components/site-chrome";
 
 export const Route = createFileRoute("/committee-only")({
+  staticData: { sitemap: false },
   ssr: false,
   head: () => ({
     meta: [

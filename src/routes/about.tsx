@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { InnerPage } from "@/components/inner-page";
 
 export const Route = createFileRoute("/about")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "About NBCS" },
     { name: "description", content: "North Bangalore Cultural Samithi welcomes families to its 49th year celebration." },

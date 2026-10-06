@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { InnerPage } from "@/components/inner-page";
 
 export const Route = createFileRoute("/gallery")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Gallery | NBCS" },
     { name: "description", content: "NBCS Durga Puja and cultural programme gallery." },

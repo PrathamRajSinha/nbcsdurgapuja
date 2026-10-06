@@ -3,6 +3,7 @@ import { InnerPage } from "@/components/inner-page";
 import { placeholderContact } from "@/lib/site-content";
 
 export const Route = createFileRoute("/sponsors")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Support NBCS" },
     { name: "description", content: "Support North Bangalore Cultural Samithi's 49th year celebration." },
