@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Facebook, Globe, Heart, IdCard, Instagram, Landmark, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { footerLinks, madeBy, membershipForm, navItems } from "@/lib/site-content";
+import { footerLinks, madeBy, membershipForm, navItems, type FooterLink } from "@/lib/site-content";
 import logoAsset from "@/assets/logo.png.asset.json";
 import dutalyAsset from "@/assets/dutaly-pages.png.asset.json";
 
@@ -90,29 +90,34 @@ const footerIcons = {
   phone: Phone,
 } as const;
 
+function FooterLinkList({ links, className }: { links: FooterLink[]; className: string }) {
+  return (
+    <div className={className}>
+      {links.map((link) => {
+        const Icon = footerIcons[link.icon];
+        const external = link.href.startsWith("http");
+        return (
+          <a key={link.href} href={link.href}{...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+            <Icon />
+            <span>{link.label}</span>
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
 export function SiteFooter() {
+  const contactLinks = footerLinks.filter((link) => link.wide);
+  const connectLinks = footerLinks.filter((link) => !link.wide);
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <div className="footer-brand"><img src={logoAsset.url} alt="NBCS emblem" /><p>North Bangalore<br />Cultural Samithi</p></div>
+        <div className="footer-brand"><img src={logoAsset.url} alt="NBCS emblem" /><p>North Bangalore<br />Cultural Samithi</p>
+          <FooterLinkList className="footer-contact" links={contactLinks} />
+        </div>
         <div><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2>
-          <div className="footer-social">
-            {footerLinks.map((link) => {
-              const Icon = footerIcons[link.icon];
-              const external = link.href.startsWith("http");
-              return (
-                <a
-                  key={link.href}
-                  className={link.wide ? "is-wide" : undefined}
-                  href={link.href}
-                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                >
-                  <Icon />
-                  <span>{link.label}</span>
-                </a>
-              );
-            })}
-          </div>
+          <FooterLinkList className="footer-social" links={connectLinks} />
         </div>
       </div>
       <div className="footer-bottom">
