@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as CommitteeOnlyRouteImport } from './routes/committee-only'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as DurgaPujaRouteImport } from './routes/durga-puja'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommitteeOnlyRoute = CommitteeOnlyRouteImport.update({
+  id: '/committee-only',
+  path: '/committee-only',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -68,6 +74,7 @@ const SponsorsRoute = SponsorsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/committee-only': typeof CommitteeOnlyRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
   '/durga-puja': typeof DurgaPujaRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/committee-only': typeof CommitteeOnlyRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
   '/durga-puja': typeof DurgaPujaRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/committee-only': typeof CommitteeOnlyRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
   '/durga-puja': typeof DurgaPujaRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/committee-only'
     | '/contact'
     | '/donate'
     | '/durga-puja'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/committee-only'
     | '/contact'
     | '/donate'
     | '/durga-puja'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/committee-only'
     | '/contact'
     | '/donate'
     | '/durga-puja'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CommitteeOnlyRoute: typeof CommitteeOnlyRoute
   ContactRoute: typeof ContactRoute
   DonateRoute: typeof DonateRoute
   DurgaPujaRoute: typeof DurgaPujaRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/committee-only': {
+      id: '/committee-only'
+      path: '/committee-only'
+      fullPath: '/committee-only'
+      preLoaderRoute: typeof CommitteeOnlyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CommitteeOnlyRoute: CommitteeOnlyRoute,
   ContactRoute: ContactRoute,
   DonateRoute: DonateRoute,
   DurgaPujaRoute: DurgaPujaRoute,
