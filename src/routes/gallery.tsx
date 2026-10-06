@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Instagram } from "lucide-react";
-import { PageShell } from "@/components/page-shell";
+import { PageShell } from "@/components/site-chrome";
 import { galleryItems } from "@/lib/gallery";
 import { instagramSection } from "@/lib/site-content";
 
