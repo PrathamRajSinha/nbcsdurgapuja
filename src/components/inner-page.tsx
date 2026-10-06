@@ -26,6 +26,8 @@ function boldTimes(text: string): ReactNode[] {
   return nodes;
 }
 
+const URL_LINE = /^(https?:\/\/|www\.)\S+$/i;
+
 function BlockLine({ line }: { line: string }) {
   const timed = line.match(LEADING_TIME);
   if (timed) {
@@ -38,6 +40,16 @@ function BlockLine({ line }: { line: string }) {
   }
   if (WEEKDAY.test(line) || MONTH.test(line)) {
     return <p className="band-date">{boldTimes(line)}</p>;
+  }
+  if (URL_LINE.test(line)) {
+    const href = line.startsWith("http") ? line : `https://${line}`;
+    return (
+      <p className="band-note">
+        <a href={href} target="_blank" rel="noopener noreferrer" className="band-link">
+          {line.replace(/^https?:\/\//, "")}
+        </a>
+      </p>
+    );
   }
   return <p className="band-note">{line}</p>;
 }

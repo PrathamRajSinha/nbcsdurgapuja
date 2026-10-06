@@ -66,9 +66,16 @@ export const impact = [
 
 export const placeholderContact = {
   address: kaliMandir.address,
-  phone: "+91 98863 30772 / +91 94483 50752",
+  phone: "+91 94483 50752 — Partho · +91 98863 30772 — Dhrubo",
   email: "northbangaloreculturalsamithi@gmail.com",
-  facebook: "/bangalore.kalibari",
+  facebook: "https://www.facebook.com/NorthBangaloreCulturalAssociation",
+  instagram: "https://www.instagram.com/n.b.c.s",
+  website: "https://www.nbcskalibari.com",
+};
+
+export const madeBy = {
+  label: "Made by",
+  url: "https://pages.dutaly.com/",
 };
 
 export const membershipForm = {

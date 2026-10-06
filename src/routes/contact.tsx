@@ -17,6 +17,7 @@ export const Route = createFileRoute("/contact")({
     { title: "Call", copy: placeholderContact.phone },
     { title: "Email", copy: placeholderContact.email },
     { title: "Facebook", copy: placeholderContact.facebook },
-    { title: "Website", copy: kaliMandir.website },
+    { title: "Instagram", copy: placeholderContact.instagram },
+    { title: "Website", copy: placeholderContact.website },
   ]} />,
 });
