@@ -84,10 +84,23 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="footer-brand"><img src={logoAsset.url} alt="NBCS emblem" /><p>North Bangalore<br />Cultural Samithi</p></div>
-        <div><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2></div>
+        <div><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2>
+          <div className="footer-social">
+            <a href={placeholderContact.facebook} target="_blank" rel="noopener noreferrer">Facebook <ArrowUpRight /></a>
+            <a href={placeholderContact.instagram} target="_blank" rel="noopener noreferrer">Instagram <ArrowUpRight /></a>
+            <a href={placeholderContact.website} target="_blank" rel="noopener noreferrer">www.nbcskalibari.com <ArrowUpRight /></a>
+          </div>
+        </div>
         <div className="footer-links">{navItems.map((item) => <Link key={item.href} to={item.href}>{item.label}<ArrowUpRight /></Link>)}</div>
       </div>
-      <div className="footer-bottom"><a href={`mailto:${placeholderContact.email}`}>{placeholderContact.email}</a><span>© NBCS</span></div>
+      <div className="footer-bottom">
+        <a href={`mailto:${placeholderContact.email}`}>{placeholderContact.email}</a>
+        <span>© NBCS</span>
+        <a className="footer-madeby" href={madeBy.url} target="_blank" rel="noopener noreferrer">
+          <span>{madeBy.label}</span>
+          <img src={dutalyAsset.url} alt="Dutaly Pages" />
+        </a>
+      </div>
     </footer>
   );
 }
