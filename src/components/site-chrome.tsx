@@ -114,7 +114,6 @@ export function SiteFooter() {
             })}
           </div>
         </div>
-        <div className="footer-links">{navItems.map((item) => <Link key={item.href} to={item.href}>{item.label}<ArrowUpRight /></Link>)}</div>
       </div>
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} North Bangalore Cultural Samithi</span>
