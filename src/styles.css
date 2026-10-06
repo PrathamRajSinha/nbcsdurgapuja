@@ -202,7 +202,8 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-durga,.hero-lotus,.hero-water,.sun-disc,.petal-field span{animation:none}.hero-durga-layer,.hero-lotus-layer,.sun-disc,.impact-cloud{transform:none}.lotus-button,.lotus-button::before,.lotus-button::after,.journey-card,.journey-card::before{transition:none}.petal-field{display:none}}
 
 /* Intro reveal */
-.intro-reveal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;pointer-events:auto}
+.intro-reveal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;pointer-events:auto;touch-action:none;overscroll-behavior:none}
+@media(max-width:700px){.intro-reveal{bottom:auto;height:100svh}.intro-reveal::before{content:"";position:absolute;inset:0 0 auto;height:100lvh;background:var(--kali);pointer-events:none}.intro-reveal.is-leaving::before{opacity:0;transition:opacity .9s ease}.intro-reveal .intro-skip,.intro-reveal .intro-sound{bottom:calc(1.5rem + env(safe-area-inset-bottom,0px));min-height:2.75rem}.intro-reveal .intro-stage{height:min(calc(100svh - 8rem),150vw)}}
 .intro-curtain{position:absolute;top:0;bottom:0;width:50.5%;background:var(--kali);transition:transform .9s cubic-bezier(.65,0,.35,1)}
 .intro-curtain-left{left:0}.intro-curtain-right{right:0}
 .intro-stage{position:relative;height:min(92svh,150vw);aspect-ratio:9/16;transition:opacity .6s ease,transform 1s ease}
@@ -235,7 +236,7 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
 .intro-sound:hover,.intro-skip:hover{background:var(--gold);color:var(--kali)}.intro-sound svg{width:1rem;height:1rem}
 .intro-reveal.is-leaving .intro-sound{opacity:0}
 
-.intro-tap{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:color-mix(in oklab,var(--kali) 55%,transparent);color:var(--cream, var(--background));font-family:var(--font-display);font-size:1.6rem;letter-spacing:.08em;text-transform:uppercase;border:0;cursor:pointer}
+.intro-tap{position:absolute;inset:0;height:auto;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:color-mix(in oklab,var(--kali) 55%,transparent);color:var(--cream, var(--background));font-family:var(--font-display);font-size:1.6rem;letter-spacing:.08em;text-transform:uppercase;border:0;cursor:pointer}
 .intro-tap svg{width:3rem;height:3rem;animation:intro-tap-pulse 1.6s ease-in-out infinite}
 @keyframes intro-tap-pulse{50%{transform:scale(1.15);opacity:.7}}
 .intro-skip,.intro-sound{z-index:7}
