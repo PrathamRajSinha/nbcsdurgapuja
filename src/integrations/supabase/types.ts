@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          donation_type: string
+          email: string | null
+          gotra: string | null
+          id: string
+          name: string
+          names: string | null
+          note: string | null
+          payment_status: string
+          phone: string
+          reference_id: string
+          upi_transaction_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          donation_type: string
+          email?: string | null
+          gotra?: string | null
+          id?: string
+          name: string
+          names?: string | null
+          note?: string | null
+          payment_status?: string
+          phone: string
+          reference_id: string
+          upi_transaction_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          donation_type?: string
+          email?: string | null
+          gotra?: string | null
+          id?: string
+          name?: string
+          names?: string | null
+          note?: string | null
+          payment_status?: string
+          phone?: string
+          reference_id?: string
+          upi_transaction_id?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
