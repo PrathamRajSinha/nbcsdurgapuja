@@ -9,6 +9,11 @@ export const Route = createFileRoute("/about")({
     { property: "og:title", content: "About NBCS" },
     { property: "og:description", content: "North Bangalore Cultural Samithi's 49th year celebration in 2026." },
     { property: "og:type", content: "website" },
+    { property: "og:image", content: "https://nbcskalibari.com/nbcs-share.jpg" },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:alt", content: "North Bangalore Cultural Samithi logo" },
+    { name: "twitter:image", content: "https://nbcskalibari.com/nbcs-share.jpg" },
     { name: "twitter:card", content: "summary_large_image" },
   ] }),
   component: () => <InnerPage label="North Bangalore Cultural Samithi" title="49th year celebration" lead="We invite you and your family to join Shri Shri Sharodiya Durga Puja 2026 and share in the festivities and fun." blocks={[

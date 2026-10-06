@@ -10,6 +10,11 @@ export const Route = createFileRoute("/contact")({
     { property: "og:title", content: "Contact | NBCS" },
     { property: "og:description", content: "Official NBCS addresses, phone numbers, email and web links." },
     { property: "og:type", content: "website" },
+    { property: "og:image", content: "https://nbcskalibari.com/nbcs-share.jpg" },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:alt", content: "North Bangalore Cultural Samithi logo" },
+    { name: "twitter:image", content: "https://nbcskalibari.com/nbcs-share.jpg" },
     { name: "twitter:card", content: "summary_large_image" },
   ] }),
   component: () => <InnerPage label="North Bangalore Cultural Samithi" title="Come celebrate with us" lead="We invite you and your family to join our festivities." blocks={[
