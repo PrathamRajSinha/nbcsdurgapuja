@@ -27,6 +27,7 @@ type Donation = {
   id: string; reference_id: string; donation_type: string; amount: number; name: string;
   names: string | null; gotra: string | null; phone: string; email: string | null;
   note: string | null; upi_transaction_id: string; created_at: string;
+  payment_status: string; verified_at: string | null;
 };
 
 const toEmail = (u: string) =>
@@ -91,6 +92,13 @@ function Dashboard() {
     return rows.filter((r) => [r.reference_id, r.phone, r.name, r.upi_transaction_id].some((v) => v?.toLowerCase().includes(s)));
   }, [rows, q]);
 
+  async function verify(id: string) {
+    const verified_at = new Date().toISOString();
+    const { error } = await supabase.from("donations").update({ payment_status: "VERIFIED", verified_at }).eq("id", id);
+    if (error) { alert("Could not verify. Please try again."); return; }
+    setRows((rs) => rs?.map((r) => (r.id === id ? { ...r, payment_status: "VERIFIED", verified_at } : r)) ?? rs);
+  }
+
   const total = filtered.reduce((n, r) => n + r.amount, 0);
 
   return (
@@ -123,6 +131,18 @@ function Dashboard() {
                 <span>{new Date(r.created_at).toLocaleString("en-IN")}</span>
               </div>
               {r.note && <p className="mt-2 text-muted-foreground">Note: {r.note}</p>}
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                {r.payment_status === "VERIFIED" ? (
+                  <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
+                    Verified{r.verified_at ? ` · ${new Date(r.verified_at).toLocaleString("en-IN")}` : ""}
+                  </span>
+                ) : (
+                  <>
+                    <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">Pending verification</span>
+                    <Button size="sm" onClick={() => verify(r.id)}>Verify</Button>
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>
