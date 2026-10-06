@@ -51,11 +51,5 @@ export function CountUp({ value }: { value: string }) {
       { threshold: 0.35 },
     );
     observer.observe(el);
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(frame);
-    };
-  }, [parsed, value]);
-
   return <span ref={ref}>{display}</span>;
 }
