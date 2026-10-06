@@ -17,5 +17,6 @@
 - Keep the route-transition cover mounted until above-the-fold images and fonts are decoded; this prevents unfinished pages appearing after the wipe.
 - Lock the document from intro loading through curtain dismissal and use a small-viewport-height mobile overlay; this prevents touch scrolling and browser-bar control jumps.
 - Keep scroll-reactive festival decoration in `festival-art.tsx`; this centralizes motion cleanup and reduced-motion handling.
+- Use the supplied DomeGallery for the full gallery with shared gallery artwork, leaving the home accordion separate; this preserves the two requested gallery experiences.
 
 - Donations are submitted through the submitDonation server function (Zod-validated, admin client) into the public.donations table and stored as PENDING_VERIFICATION; there is deliberately no public read path and no payment-success claim in the UI. Why: the committee verifies UPI payments manually and donor data must not be publicly readable.
