@@ -1,10 +1,11 @@
-import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, Heart, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, Heart, Instagram, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { durgaPujaVenue, festivalDates, impact } from "@/lib/site-content";
+import { durgaPujaVenue, festivalPride, impact, instagramSection } from "@/lib/site-content";
 import durgaAsset from "@/assets/durga.png.asset.json";
 import { CloudParallax, DancerBorder, FallingPetals, HeroArtwork, LotusAccent } from "./festival-art";
 import { PageShell } from "./site-chrome";
 import { DurgaPujaJourney } from "./durga-puja-journey";
+import { InstagramEmbed } from "./instagram-embed";
 
 export function HomePage() {
   return (
@@ -53,15 +54,23 @@ export function HomePage() {
 
         <DurgaPujaJourney />
 
-        <section className="programme-section">
-          <div className="programme-heading"><p className="eyebrow">Festival calendar</p><h2>Sacred days,<br />shared moments.</h2></div>
-          <div className="event-list">
-            {festivalDates.map((event) => <a href="/events" key={event.title}><time>{event.date}</time><h3>{event.title}</h3><p>{event.note}</p><ArrowRight /></a>)}
+        <section className="calendar-cta-section">
+          <p className="eyebrow">Festival calendar</p>
+          <Button variant="festival" size="xl" asChild><a href="/events">Festival Calendar <ArrowRight /></a></Button>
+        </section>
+
+        <section className="instagram-section">
+          <a className="insta-follow" href={instagramSection.profileUrl} target="_blank" rel="noopener noreferrer">Follow us on Insta <Instagram /></a>
+          <div className="insta-embed-wrap">
+            <InstagramEmbed url={instagramSection.reelUrl} />
           </div>
         </section>
 
         <section className="impact-section">
           <CloudParallax />
+          <p className="impact-tagline">{festivalPride.tagline}</p>
+          <p className="impact-estd">{festivalPride.established}</p>
+          <p className="impact-awards">{festivalPride.awards}</p>
           <p className="eyebrow">Last celebration, in numbers</p>
           <div className="impact-grid">{impact.map((item) => <div key={item.label}><strong>{item.value}</strong><span>{item.label}</span></div>)}</div>
           <p className="impact-note">A celebration made possible by thousands of neighbours, volunteers, artists and well-wishers.</p>

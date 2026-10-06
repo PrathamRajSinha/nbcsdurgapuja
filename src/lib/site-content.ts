@@ -92,6 +92,17 @@ export const placeholderContact = {
   website: "https://www.nbcskalibari.com",
 };
 
+export const festivalPride = {
+  tagline: "Pujo te ashun dekha hobe!",
+  established: "Estd: 1978",
+  awards: "Winner of “Best Pushpanjali”, “Best Protima”, “Best Midsized Pujo”, “Best Bhog & Prasad” among many others",
+};
+
+export const instagramSection = {
+  profileUrl: placeholderContact.instagram,
+  reelUrl: "https://www.instagram.com/reel/DcJQYwYvuEj/",
+};
+
 export const madeBy = {
   label: "Made by",
   url: "https://pages.dutaly.com/",
