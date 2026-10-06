@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import type { User } from "@supabase/supabase-js";
-import { LogOut, Search } from "lucide-react";
+import { Download, LogOut, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,11 +101,46 @@ function Dashboard() {
 
   const total = filtered.reduce((n, r) => n + r.amount, 0);
 
+  function downloadCsv() {
+    const esc = (v: string | number | null) => {
+      const s = v == null ? "" : String(v);
+      return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = ["Reference ID", "Type", "Amount (INR)", "Name", "Names", "Gotra", "Mobile", "Email", "UPI Transaction ID", "Submitted At", "Verification Status", "Verified At", "Note"];
+    const lines = filtered.map((r) => [
+      r.reference_id,
+      r.donation_type === "sankalpa" ? "Sankalpa" : "Donation",
+      r.amount,
+      r.name,
+      r.names,
+      r.gotra,
+      r.phone,
+      r.email,
+      r.upi_transaction_id,
+      new Date(r.created_at).toLocaleString("en-IN"),
+      r.payment_status === "VERIFIED" ? "Verified" : "Pending verification",
+      r.verified_at ? new Date(r.verified_at).toLocaleString("en-IN") : "",
+      r.note,
+    ].map(esc).join(","));
+    const csv = "\uFEFF" + [header.map(esc).join(","), ...lines].join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `nbcs-donations-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl text-foreground">Donation submissions</h1>
-        <Button variant="outline" onClick={() => supabase.auth.signOut()}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="outline" onClick={downloadCsv} disabled={filtered.length === 0}>
+            <Download className="mr-2 h-4 w-4" />Download CSV
+          </Button>
+          <Button variant="outline" onClick={() => supabase.auth.signOut()}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>
+        </div>
       </div>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
