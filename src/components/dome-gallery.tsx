@@ -85,9 +85,9 @@ function buildItems(pool: ImageItem[], seg: number): ItemDef[] {
   const usedImages = Array.from({ length: totalSlots }, (_, i) => normalizedImages[i % normalizedImages.length]);
 
   for (let i = 1; i < usedImages.length; i++) {
-    if (usedImages[i].src === usedImages[i - 1].src) {
+    if (usedImages[i]?.src === usedImages[i - 1]?.src) {
       for (let j = i + 1; j < usedImages.length; j++) {
-        if (usedImages[j].src !== usedImages[i].src) {
+        if (usedImages[j]?.src !== usedImages[i]?.src) {
           const tmp = usedImages[i];
           usedImages[i] = usedImages[j];
           usedImages[j] = tmp;
@@ -99,8 +99,8 @@ function buildItems(pool: ImageItem[], seg: number): ItemDef[] {
 
   return coords.map((c, i) => ({
     ...c,
-    src: usedImages[i].src,
-    alt: usedImages[i].alt
+    src: usedImages[i]?.src || '',
+    alt: usedImages[i]?.alt || ''
   }));
 }
 
@@ -185,7 +185,8 @@ export default function DomeGallery({
     const root = rootRef.current;
     if (!root) return;
     const ro = new ResizeObserver(entries => {
-      const cr = entries[0].contentRect;
+      const cr = entries[0]?.contentRect;
+      if (!cr) return;
       const w = Math.max(1, cr.width),
         h = Math.max(1, cr.height);
       const minDim = Math.min(w, h),
@@ -599,8 +600,8 @@ export default function DomeGallery({
     const overlay = document.createElement('div');
     overlay.className = 'dg-enlarge';
     overlay.style.cssText = `position:absolute; left:${frameR.left - mainR.left}px; top:${frameR.top - mainR.top}px; width:${frameR.width}px; height:${frameR.height}px; opacity:0; z-index:30; will-change:transform,opacity; transform-origin:top left; transition:transform ${enlargeTransitionMs}ms ease, opacity ${enlargeTransitionMs}ms ease; border-radius:${openedImageBorderRadius}; overflow:hidden; box-shadow:var(--dome-shadow);`;
-    const rawSrc = parent.dataset.src || (el.querySelector('img') as HTMLImageElement)?.src || '';
-    const rawAlt = parent.dataset.alt || (el.querySelector('img') as HTMLImageElement)?.alt || '';
+    const rawSrc = parent.dataset['src'] || (el.querySelector('img') as HTMLImageElement)?.src || '';
+    const rawAlt = parent.dataset['alt'] || (el.querySelector('img') as HTMLImageElement)?.alt || '';
     const img = document.createElement('img');
     img.src = rawSrc;
     img.alt = rawAlt;

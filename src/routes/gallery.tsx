@@ -5,7 +5,7 @@ import { galleryItems } from "@/lib/gallery";
 import { instagramSection } from "@/lib/site-content";
 import DomeGallery from "@/components/dome-gallery";
 
-const domeImages = galleryItems.map((item) => ({ src: item.image, alt: item.alt || item.label }));
+const domeImages = galleryItems.map((item) => ({ src: item.image, alt: item.alt || item.label || "" }));
 
 export const Route = createFileRoute("/gallery")({
   staticData: { sitemap: true },
