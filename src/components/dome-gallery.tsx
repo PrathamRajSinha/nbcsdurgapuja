@@ -277,6 +277,33 @@ export default function DomeGallery({
     }
   }, []);
 
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    let previousTime = performance.now();
+    let resumeAt = previousTime + 1200;
+
+    const turnWhenIdle = (time: number) => {
+      const elapsed = Math.min(time - previousTime, 50);
+      previousTime = time;
+      const paused = reducedMotion.matches || document.hidden || draggingRef.current ||
+        inertiaRAF.current !== null || openingRef.current || focusedElRef.current !== null ||
+        rootRef.current?.getAttribute('data-enlarging') === 'true';
+
+      if (paused) {
+        resumeAt = time + 1200;
+      } else if (time >= resumeAt) {
+        const rotation = rotationRef.current;
+        rotation.y = wrapAngleSigned(rotation.y + elapsed * 0.005);
+        applyTransform(rotation.x, rotation.y);
+      }
+      frame = requestAnimationFrame(turnWhenIdle);
+    };
+
+    frame = requestAnimationFrame(turnWhenIdle);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   const startInertia = useCallback(
     (vx: number, vy: number) => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -552,6 +579,7 @@ export default function DomeGallery({
 
   const openItemFromElement = (el: HTMLElement) => {
     if (openingRef.current) return;
+    stopInertia();
     openingRef.current = true;
     openStartedAtRef.current = performance.now();
     lockScroll();
