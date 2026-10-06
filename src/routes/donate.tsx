@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowRight, Check, Download, Heart, Smartphone } from "lucide-react";
+import { useRef, useState, type FormEvent } from "react";
+import { ArrowRight, Check, Download, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageShell } from "@/components/site-chrome";
 import { FallingPetals, LotusAccent, WaterRibbon } from "@/components/festival-art";
@@ -14,36 +14,8 @@ const TYPE_LABEL: Record<ContributionType, string> = {
   sankalpa: "a Sankalpa offering",
 };
 
-const UPI_APPS = [
-  { id: "gpay", label: "Google Pay", scheme: "tez://upi/pay?" },
-  { id: "phonepe", label: "PhonePe", scheme: "phonepe://pay?" },
-  { id: "paytm", label: "Paytm", scheme: "paytmmp://pay?" },
-  { id: "upi", label: "Other UPI apps", scheme: "upi://pay?" },
-] as const;
-
 function formatINR(value: number) {
   return new Intl.NumberFormat("en-IN").format(value);
-}
-
-function makeAttemptRef(type: ContributionType) {
-  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  let id = "";
-  for (let i = 0; i < 6; i++) id += alphabet[Math.floor(Math.random() * alphabet.length)];
-  return `NBCS-${type === "committee" ? "COMMITTEE" : "SANKALPA"}-${id}`;
-}
-
-function buildUpiUri(scheme: string, amount: number, ref: string) {
-  const query = new URLSearchParams({
-    ver: "01",
-    mode: "01",
-    pa: donation.upiId,
-    pn: donation.payeeName,
-    mc: "8661",
-    am: String(amount),
-    cu: "INR",
-    tr: ref,
-  });
-  return `${scheme}${query.toString()}`;
 }
 
 function legacyCopy(text: string) {
@@ -74,9 +46,7 @@ export const Route = createFileRoute("/donate")({
 
 function DonationPage() {
   const [type, setType] = useState<ContributionType>("committee");
-  const [preset, setPreset] = useState<number | null>(null);
-  const [custom, setCustom] = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [amountInput, setAmountInput] = useState("");
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<number | null>(null);
 
@@ -85,15 +55,7 @@ function DonationPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [reference, setReference] = useState<string | null>(null);
 
-  const customValue = Number(custom.replace(/[^0-9]/g, ""));
-  const amount = preset ?? (custom && customValue >= 1 ? customValue : null);
-  // A fresh payment reference for every attempt — changing the type or amount starts a new one.
-  const attemptRef = useMemo(() => makeAttemptRef(type), [type, amount]);
-
-  function selectPreset(value: number) {
-    setPreset((current) => (current === value ? null : value));
-    setCustom("");
-  }
+  const amount = Number(amountInput);
 
   function copyUpiId() {
     const mark = () => {
@@ -115,8 +77,8 @@ function DonationPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
-    if (!amount) {
-      setFormError("Please choose an amount first.");
+    if (!Number.isInteger(amount) || amount < 1 || amount > 1_000_000) {
+      setFormError("Please enter a whole amount between ₹1 and ₹10,00,000.");
       return;
     }
     if (!form.name.trim() || !form.upiTransactionId.trim() || !form.phone.trim()) {
@@ -149,9 +111,7 @@ function DonationPage() {
 
   function resetAll() {
     setType("committee");
-    setPreset(null);
-    setCustom("");
-    setShowForm(false);
+    setAmountInput("");
     setForm({ name: "", names: "", gotra: "", upiTransactionId: "", phone: "", email: "", note: "" });
     setFormError(null);
     setReference(null);
@@ -209,94 +169,8 @@ function DonationPage() {
           </div>
         </section>
 
-        <section className="donate-step donate-rise" aria-labelledby="donate-amount-heading" style={{ animationDelay: ".16s" }}>
-          <h2 id="donate-amount-heading"><span>Step two</span>Choose your amount</h2>
-          <div className="donate-amounts">
-            {donation.presets.map((value) => (
-              <button key={value} type="button" className={`donate-amount ${preset === value ? "is-active" : ""}`} aria-pressed={preset === value} onClick={() => selectPreset(value)}>
-                ₹{formatINR(value)}
-              </button>
-            ))}
-            <label className="donate-custom">
-              <span>Custom amount</span>
-              <span className="rupee">₹</span>
-              <input
-                inputMode="numeric"
-                autoComplete="off"
-                placeholder="e.g. 751"
-                value={custom}
-                onChange={(event) => {
-                  setPreset(null);
-                  setCustom(event.target.value.replace(/[^0-9]/g, "").slice(0, 7));
-                }}
-                aria-label="Custom amount in rupees"
-              />
-            </label>
-          </div>
-          {!amount && <p className="donate-hint">Choose an amount to unlock the payment options below.</p>}
-        </section>
-
-        <section className="donate-pay donate-rise" aria-label="Payment" style={{ animationDelay: ".24s" }}>
-          <div className="donate-qr">
-            <div className="donate-qr-frame">
-              <img src={donation.qrUrl} alt={`UPI QR code for ${donation.bankName} — scan with any UPI app to pay`} />
-            </div>
-            <p className="donate-qr-caption">Scan with any UPI app</p>
-            <p className="donate-upi-row">
-              <span>UPI ID</span>
-              <strong>{donation.upiId}</strong>
-              <button type="button" className={`donate-copy ${copied ? "is-copied" : ""}`} onClick={copyUpiId} aria-label={copied ? "UPI ID copied" : "Copy UPI ID"} aria-live="polite">
-                {copied ? "Copied ✓" : "Copy"}
-              </button>
-            </p>
-            <a className="donate-qr-download" href={donation.qrUrl} download={donation.qrDownloadName}>
-              <Download /> Download QR
-            </a>
-          </div>
-
-          <div className="donate-actions">
-            <p className="donate-pay-status">
-              {amount
-                ? <>Paying <strong>₹{formatINR(amount)}</strong> as {TYPE_LABEL[type]}.</>
-                : "Your selected amount will appear here."}
-            </p>
-            <h3>Or pay directly</h3>
-            <div className="donate-apps">
-              {UPI_APPS.map((app) => (
-                <a
-                  key={app.id}
-                  className={`donate-app ${amount ? "" : "is-disabled"}`}
-                  href={amount ? buildUpiUri(app.scheme, amount, attemptRef) : undefined}
-                  aria-disabled={amount ? undefined : true}
-                  onClick={(event) => { if (!amount) event.preventDefault(); }}
-                >
-                  <Smartphone /> {app.label}
-                </a>
-              ))}
-            </div>
-            <p className="donate-fineprint">
-              {amount
-                ? "This opens your UPI app with the amount filled in. The website never sees your UPI PIN or bank details."
-                : "Choose an amount above to enable direct payment."}
-            </p>
-          </div>
-        </section>
-
-        <WaterRibbon className="donate-water" />
-
-        <section className="donate-paid">
-          <h2>Already paid?</h2>
-          <p className="donate-paid-copy">Tell us about your payment so the committee can thank you personally.</p>
-          {showForm ? (
-            <Button variant="ink" size="xl" onClick={() => document.querySelector(".donate-form")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Go to the form <ArrowRight /></Button>
-          ) : (
-            <Button variant="festival" size="xl" onClick={() => setShowForm(true)}>I've Completed the Payment <ArrowRight /></Button>
-          )}
-        </section>
-
-        {showForm && (
-          <form className="donate-form donate-rise" onSubmit={handleSubmit} noValidate>
-            <h2>Donor details</h2>
+        <form className="donate-form donate-rise" onSubmit={handleSubmit} noValidate style={{ animationDelay: ".16s" }}>
+            <h2><span>Step two</span>Your details</h2>
             <p>
               {type === "sankalpa"
                 ? "Share your Sankalpa details — your name(s) and gotra are used for the offering."
@@ -306,6 +180,10 @@ function DonationPage() {
             <div className="donate-field">
               <label htmlFor="donate-name">Name <span className="req">*</span></label>
               <input id="donate-name" name="name" autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+            </div>
+            <div className="donate-field">
+              <label htmlFor="donate-amount">Amount <span className="req">*</span></label>
+              <div className="donate-amount-input"><span>₹</span><input id="donate-amount" name="amount" inputMode="numeric" autoComplete="off" placeholder="Enter amount" value={amountInput} onChange={(e) => setAmountInput(e.target.value.replace(/[^0-9]/g, "").slice(0, 7))} required /></div>
             </div>
             <div className={`donate-field ${type === "sankalpa" ? "is-devotional" : ""}`}>
               <label htmlFor="donate-names">Name(s) {type === "sankalpa" && <span className="req">*</span>}</label>
@@ -320,10 +198,6 @@ function DonationPage() {
               </div>
             )}
             <div className="donate-field">
-              <label htmlFor="donate-utr">UPI Transaction ID <span className="req">*</span></label>
-              <input id="donate-utr" name="upiTransactionId" autoComplete="off" placeholder="From your UPI app, e.g. 4052xxxxxx" value={form.upiTransactionId} onChange={(e) => setForm({ ...form, upiTransactionId: e.target.value })} required />
-            </div>
-            <div className="donate-field">
               <label htmlFor="donate-phone">Mobile Number <span className="req">*</span></label>
               <input id="donate-phone" name="phone" type="tel" autoComplete="tel" placeholder="+91" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
             </div>
@@ -336,16 +210,39 @@ function DonationPage() {
               <textarea id="donate-note" name="note" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
             </div>
 
+            <section className="donate-pay is-wide" aria-labelledby="donate-payment-heading">
+              <div className="donate-qr">
+                <h2 id="donate-payment-heading"><span>Step three</span>Pay by UPI</h2>
+                <div className="donate-qr-frame">
+                  <img src={donation.qrUrl} alt={`UPI QR code for ${donation.bankName} — scan with any UPI app to pay`} />
+                </div>
+                <p className="donate-qr-caption">Scan with any UPI app</p>
+                <p className="donate-upi-row">
+                  <span>UPI ID</span>
+                  <strong>{donation.upiId}</strong>
+                  <button type="button" className={`donate-copy ${copied ? "is-copied" : ""}`} onClick={copyUpiId} aria-label={copied ? "UPI ID copied" : "Copy UPI ID"} aria-live="polite">{copied ? "Copied ✓" : "Copy"}</button>
+                </p>
+                <a className="donate-qr-download" href={donation.qrUrl} download={donation.qrDownloadName}><Download /> Save QR</a>
+              </div>
+            </section>
+
+            <WaterRibbon className="donate-water is-wide" />
+
+            <div className="donate-field is-wide donate-transaction">
+              <label htmlFor="donate-utr">UPI Transaction ID <span className="req">*</span></label>
+              <p className="field-note">After paying, enter the transaction ID shown in your UPI app.</p>
+              <input id="donate-utr" name="upiTransactionId" autoComplete="off" placeholder="e.g. 4052xxxxxx" value={form.upiTransactionId} onChange={(e) => setForm({ ...form, upiTransactionId: e.target.value })} required />
+            </div>
+
             {formError && <p className="donate-form-error" role="alert">{formError}</p>}
-            <p className="donate-form-note">Amount: {amount ? `₹${formatINR(amount)}` : "not chosen yet"} · Type: {TYPE_LABEL[type]}.</p>
+            <p className="donate-form-note">{amount ? `₹${formatINR(amount)}` : "Enter your amount above"} · {TYPE_LABEL[type]}.</p>
 
             <div className="donate-submit">
               <Button variant="donate" size="xl" type="submit" disabled={submitting || !amount}>
                 <Heart /> {submitting ? "Sending…" : "Submit for verification"}
               </Button>
             </div>
-          </form>
-        )}
+        </form>
       </main>
     </PageShell>
   );
