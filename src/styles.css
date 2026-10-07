@@ -507,5 +507,13 @@ html { max-width: 100%; overflow-x: clip; scroll-behavior: smooth; }
     }
   
 .gallery-dome-page{padding:9rem 0 3rem;overflow:hidden}.gallery-dome-heading{padding:0 7vw 1rem}.gallery-dome-heading h1{font-family:var(--font-display);font-size:4rem;line-height:1.05;margin:1rem 0}.gallery-dome{width:100%;height: min(72svh,850px);min-height:460px;background:var(--kali)}.gallery-dome-page>.insta-follow{display:flex;justify-content:center;margin:2rem auto;width:fit-content}.dg-item__image{padding:0;width:auto;height:auto;border:0;white-space:normal;background:var(--overlay-blur-color);display:block}.dg-item__image:hover{background:var(--overlay-blur-color)}.dg-item__image:focus-visible{outline:3px solid var(--gold);outline-offset:3px}.dg-item__image img{border-radius:0}.dome-close{display:none;position:absolute;top:1rem;right:1rem;z-index:40;background:var(--gold);color:var(--kali)}.dg-sphere-root[data-enlarging="true"] .dome-close{display:inline-flex}.dome-close:hover{background:var(--gold);color:var(--kali)}body.dg-scroll-lock{overflow:hidden}.dg-enlarge,.dg-enlarge-closing{background:var(--background)}
-@media(max-width:700px){.gallery-dome-page{padding-top:7rem}.gallery-dome-heading{padding-inline:1.25rem}.gallery-dome-heading h1{font-size:3rem}.gallery-dome{height:64svh;min-height:400px}}
+@media(max-width:767px){.gallery-dome-page{padding-top:7rem}.gallery-dome-heading{padding-inline:1.25rem}.gallery-dome-heading h1{font-size:3rem}.gallery-dome{height:74svh;min-height:480px}}
+.gallery-photo-scrim{position:fixed;inset:0;z-index:200;background:var(--dome-scrim)}
+.gallery-photo-viewer{position:fixed;inset:0;z-index:201;background:var(--kali);color:var(--gold);display:flex;flex-direction:column;overflow:hidden;outline:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+.gallery-photo-toolbar{display:flex;justify-content:flex-end;gap:.5rem;padding:.75rem;flex-shrink:0;background:var(--kali)}
+.gallery-photo-toolbar button{width:44px;height:44px;color:var(--gold)}
+.gallery-photo-toolbar button:hover{background:var(--dome-scrim)}
+.gallery-photo-viewer .gallery-photo-zoom{width:100%;height:100%;min-height:0;flex:1;touch-action:none}
+.gallery-photo-viewer .gallery-photo-content{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.gallery-photo-content img{width:100%;height:100%;object-fit:contain;user-select:none}
 @media(prefers-reduced-motion:reduce){.dg-sphere-item,.dg-item__image{transition:none}}
