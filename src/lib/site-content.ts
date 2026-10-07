@@ -115,7 +115,7 @@ export const galleryCopy = {
 };
 
 export const madeBy = {
-  label: "Made by",
+  label: "Powered by",
   url: "https://pages.dutaly.com/",
 };
 
