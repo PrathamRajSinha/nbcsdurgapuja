@@ -703,15 +703,18 @@ export default function DomeGallery({
 
   useEffect(() => {
     const cancelDrag = () => {
+      if (draggingRef.current && movedRef.current) lastDragEndAt.current = performance.now();
       draggingRef.current = false;
       startPosRef.current = null;
       tapTargetRef.current = null;
       movedRef.current = false;
     };
     window.addEventListener('pointercancel', cancelDrag);
+    window.addEventListener('pointerup', cancelDrag);
     window.addEventListener('blur', cancelDrag);
     return () => {
       window.removeEventListener('pointercancel', cancelDrag);
+      window.removeEventListener('pointerup', cancelDrag);
       window.removeEventListener('blur', cancelDrag);
       document.body.classList.remove('dg-scroll-lock');
       stopInertia();
