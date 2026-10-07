@@ -68,7 +68,7 @@ export const kaliMandir = {
   name: "Kali Mandir",
   address: "8A, FTI Colony, Nandini Layout, Bengaluru — 560 096",
   locationUrl: "https://www.myloc.in/bangalorekalibari",
-  website: "https://www.nbcskalibari.com",
+  website: "https://nbcskalibari.com",
 };
 
 export const impact = [
@@ -89,7 +89,7 @@ export const placeholderContact = {
   email: "northbangaloreculturalsamithi@gmail.com",
   facebook: "https://www.facebook.com/NorthBangaloreCulturalAssociation",
   instagram: "https://www.instagram.com/n.b.c.s",
-  website: "https://www.nbcskalibari.com",
+  website: "https://nbcskalibari.com",
 };
 
 export const festivalPride = {
@@ -138,13 +138,14 @@ export type FooterLink = {
   label: string;
   href: string;
   icon: "facebook" | "instagram" | "globe" | "pin" | "temple" | "member" | "mail" | "phone";
+  handle?: string;
   wide?: boolean;
 };
 
 export const footerLinks: FooterLink[] = [
-  { label: "Facebook", href: placeholderContact.facebook, icon: "facebook" },
-  { label: "Instagram", href: placeholderContact.instagram, icon: "instagram" },
-  { label: "www.nbcskalibari.com", href: placeholderContact.website, icon: "globe" },
+  { label: "Facebook", href: placeholderContact.facebook, icon: "facebook", handle: "NorthBangaloreCulturalAssociation" },
+  { label: "Instagram", href: placeholderContact.instagram, icon: "instagram", handle: "@n.b.c.s" },
+  { label: "Website", href: placeholderContact.website, icon: "globe", handle: "nbcskalibari.com" },
   { label: "Durga Puja location", href: durgaPujaVenue.locationUrl, icon: "pin" },
   { label: "Kali Bari location", href: kaliMandir.locationUrl, icon: "temple" },
   { label: membershipForm.label, href: membershipForm.url, icon: "member" },

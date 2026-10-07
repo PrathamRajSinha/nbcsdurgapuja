@@ -100,6 +100,7 @@ function FooterLinkList({ links, className }: { links: FooterLink[]; className: 
           <a key={link.href} href={link.href}{...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
             <Icon />
             <span>{link.label}</span>
+            {link.handle ? <span className="link-handle">{link.handle}</span> : null}
           </a>
         );
       })}
@@ -113,11 +114,10 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <div className="footer-brand"><img src={logoAsset.url} alt="NBCS emblem" /><p>North Bangalore<br />Cultural Samithi</p>
-          <FooterLinkList className="footer-contact" links={contactLinks} />
-        </div>
-        <div><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2>
+        <div className="footer-brand"><img src={logoAsset.url} alt="NBCS emblem" /><p>North Bangalore<br />Cultural Samithi</p></div>
+        <div className="footer-connect"><p className="eyebrow">Durga Puja & Kali Bari</p><h2>Culture flows<br />through community.</h2>
           <FooterLinkList className="footer-social" links={connectLinks} />
+          <FooterLinkList className="footer-contact" links={contactLinks} />
         </div>
       </div>
       <div className="footer-bottom">
