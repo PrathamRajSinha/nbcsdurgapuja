@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useCallback, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useCallback, useState, type CSSProperties } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useGesture } from '@use-gesture/react';
+import { GalleryPhotoViewer } from '@/components/gallery-photo-viewer';
 
 type ImageItem = string | { src: string; alt?: string };
 
@@ -156,6 +157,8 @@ export default function DomeGallery({
   const openingRef = useRef(false);
   const openStartedAtRef = useRef(0);
   const lastDragEndAt = useRef(0);
+  const [mobilePhoto, setMobilePhoto] = useState<{ src: string; alt: string } | null>(null);
+  const mobilePhotoOpenRef = useRef(false);
 
   const scrollLockedRef = useRef(false);
   const lockScroll = useCallback(() => {
@@ -212,7 +215,7 @@ export default function DomeGallery({
       let radius = basis * fit;
       const heightGuard = h * 1.35;
       radius = Math.min(radius, heightGuard);
-      radius = clamp(radius, minRadius, maxRadius);
+      radius = clamp(radius, w < 768 ? Math.max(minRadius, 580) : minRadius, maxRadius);
       lockedRadiusRef.current = Math.round(radius);
 
       const viewerPad = Math.max(8, Math.round(minDim * padFactor));
@@ -288,7 +291,7 @@ export default function DomeGallery({
       previousTime = time;
       const paused = reducedMotion.matches || document.hidden || draggingRef.current ||
         inertiaRAF.current !== null || openingRef.current || focusedElRef.current !== null ||
-        rootRef.current?.getAttribute('data-enlarging') === 'true';
+        rootRef.current?.getAttribute('data-enlarging') === 'true' || mobilePhotoOpenRef.current;
 
       if (paused) {
         resumeAt = time + 1200;
@@ -341,13 +344,11 @@ export default function DomeGallery({
   useGesture(
     {
       onDragStart: ({ event }) => {
-        if (focusedElRef.current) return;
+        if (focusedElRef.current || mobilePhotoOpenRef.current) return;
         stopInertia();
 
         const evt = event as PointerEvent;
         pointerTypeRef.current = (evt.pointerType as any) || 'mouse';
-        if (pointerTypeRef.current === 'touch') evt.preventDefault();
-        if (pointerTypeRef.current === 'touch') lockScroll();
         draggingRef.current = true;
         cancelTapRef.current = false;
         movedRef.current = false;
@@ -356,11 +357,18 @@ export default function DomeGallery({
         const potential = (evt.target as Element).closest?.('.dg-item__image') as HTMLElement | null;
         tapTargetRef.current = potential || null;
       },
-      onDrag: ({ event, last, velocity: velArr = [0, 0], direction: dirArr = [0, 0], movement }) => {
+      onDrag: ({ event, last, canceled, velocity: velArr = [0, 0], direction: dirArr = [0, 0], movement }) => {
+        if (canceled) {
+          draggingRef.current = false;
+          startPosRef.current = null;
+          tapTargetRef.current = null;
+          movedRef.current = false;
+          lastDragEndAt.current = performance.now();
+          return;
+        }
         if (focusedElRef.current || !draggingRef.current || !startPosRef.current) return;
 
         const evt = event as PointerEvent;
-        if (pointerTypeRef.current === 'touch') evt.preventDefault();
 
         const dxTotal = evt.clientX - startPosRef.current.x;
         const dyTotal = evt.clientY - startPosRef.current.y;
@@ -414,19 +422,15 @@ export default function DomeGallery({
           startPosRef.current = null;
           cancelTapRef.current = !isTap;
 
-          if (isTap && tapTargetRef.current && !focusedElRef.current) {
-            openItemFromElement(tapTargetRef.current);
-          }
           tapTargetRef.current = null;
 
           if (cancelTapRef.current) setTimeout(() => (cancelTapRef.current = false), 120);
-          if (pointerTypeRef.current === 'touch') unlockScroll();
           if (movedRef.current) lastDragEndAt.current = performance.now();
           movedRef.current = false;
         }
       }
     },
-    { target: mainRef, eventOptions: { passive: false } }
+    { target: mainRef, eventOptions: { passive: false }, drag: { axis: 'x', filterTaps: true, threshold: 8, pointer: { capture: false } } }
   );
 
   useEffect(() => {
@@ -580,6 +584,14 @@ export default function DomeGallery({
   const openItemFromElement = (el: HTMLElement) => {
     if (openingRef.current) return;
     stopInertia();
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      const image = el.querySelector('img');
+      if (!image) return;
+      mobilePhotoOpenRef.current = true;
+      draggingRef.current = false;
+      setMobilePhoto({ src: image.src, alt: image.alt });
+      return;
+    }
     openingRef.current = true;
     openStartedAtRef.current = performance.now();
     lockScroll();
@@ -690,7 +702,20 @@ export default function DomeGallery({
   };
 
   useEffect(() => {
+    const cancelDrag = () => {
+      if (draggingRef.current && movedRef.current) lastDragEndAt.current = performance.now();
+      draggingRef.current = false;
+      startPosRef.current = null;
+      tapTargetRef.current = null;
+      movedRef.current = false;
+    };
+    window.addEventListener('pointercancel', cancelDrag);
+    window.addEventListener('pointerup', cancelDrag);
+    window.addEventListener('blur', cancelDrag);
     return () => {
+      window.removeEventListener('pointercancel', cancelDrag);
+      window.removeEventListener('pointerup', cancelDrag);
+      window.removeEventListener('blur', cancelDrag);
       document.body.classList.remove('dg-scroll-lock');
       stopInertia();
     };
@@ -701,7 +726,6 @@ export default function DomeGallery({
       <div
         ref={rootRef}
         className="dg-sphere-root relative w-full h-full"
-        data-lenis-prevent
         style={
           {
             ['--segments-x' as any]: segments,
@@ -717,7 +741,7 @@ export default function DomeGallery({
           ref={mainRef}
           className="absolute inset-0 grid place-items-center overflow-hidden select-none"
           style={{
-            touchAction: 'none',
+            touchAction: 'pan-y',
             WebkitUserSelect: 'none',
             backgroundColor: `var(--overlay-blur-color, ${overlayBlurColor})`
           }}
@@ -759,14 +783,6 @@ export default function DomeGallery({
                     }}
                     aria-label={it.alt || 'Open image'}
                     onClick={e => {
-                      if (draggingRef.current) return;
-                      if (movedRef.current) return;
-                      if (performance.now() - lastDragEndAt.current < 80) return;
-                      if (openingRef.current) return;
-                      openItemFromElement(e.currentTarget as HTMLElement);
-                    }}
-                    onPointerUp={e => {
-                      if ((e.nativeEvent as PointerEvent).pointerType !== 'touch') return;
                       if (draggingRef.current) return;
                       if (movedRef.current) return;
                       if (performance.now() - lastDragEndAt.current < 80) return;
@@ -850,6 +866,10 @@ export default function DomeGallery({
           <Button variant="ghost" size="icon" className="dome-close" aria-label="Close image" title="Close image" onClick={() => scrimRef.current?.click()}><X /></Button>
         </div>
       </div>
+      <GalleryPhotoViewer photo={mobilePhoto} onClose={() => {
+        mobilePhotoOpenRef.current = false;
+        setMobilePhoto(null);
+      }} />
     </>
   );
 }

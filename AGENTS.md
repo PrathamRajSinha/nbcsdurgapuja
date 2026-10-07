@@ -19,5 +19,7 @@
 - Keep scroll-reactive festival decoration in `festival-art.tsx`; this centralizes motion cleanup and reduced-motion handling.
 - Use the supplied DomeGallery for all gallery photos and a curated subset in the home accordion, both from the shared gallery catalogue; this preserves both experiences without overcrowding the home page.
 - Coordinate dome idle rotation through its existing rotation refs, pausing for drag, inertia, enlarged photos, hidden tabs and reduced motion; this prevents competing movement controllers.
+- Keep closed dome touch gestures horizontal with native vertical scrolling and no document lock; this prevents canceled swipes from trapping the page.
+- Open phone gallery photos in a portal dialog with react-zoom-pan-pinch; this isolates pinch/pan and releases the dialog's scroll lock on dismissal.
 
 - Donations are submitted through the submitDonation server function (Zod-validated, admin client) into the public.donations table and stored as PENDING_VERIFICATION; there is deliberately no public read path and no payment-success claim in the UI. Why: the committee verifies UPI payments manually and donor data must not be publicly readable.
