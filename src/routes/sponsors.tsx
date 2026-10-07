@@ -20,6 +20,6 @@ export const Route = createFileRoute("/sponsors")({
   component: () => <InnerPage label="49th year celebration" title="Celebrate with us" lead="Your presence and sincere cooperation make our puja and cultural programmes more meaningful and joyful." blocks={[
     { title: "Call", copy: placeholderContact.phone },
     { title: "Email", copy: placeholderContact.email },
-    { title: "Visit online", copy: "www.nbcskalibari.com" },
+    { title: "Visit online", copy: "nbcskalibari.com" },
   ]} />,
 });
