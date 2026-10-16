@@ -1,11 +1,12 @@
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, Download, LoaderCircle, Pencil, Plus, Search } from "lucide-react";
+import { Camera, Download, LoaderCircle, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import { scanReceipt } from "@/lib/committee.functions";
 import { downloadCsv, fmtDate, inr, toCsv } from "@/lib/committee-csv";
 
@@ -49,6 +50,9 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
   const [scanImage, setScanImage] = useState<string | null>(null);
   const [uncertain, setUncertain] = useState<string[]>([]);
   const [scanning, setScanning] = useState(false);
+  const [deleting, setDeleting] = useState<Offline | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const scan = useServerFn(scanReceipt);
 
@@ -102,6 +106,28 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
     }
   }
 
+  async function deleteTransaction() {
+    if (!deleting || deleteBusy) return;
+    setDeleteBusy(true);
+    setDeleteError("");
+    try {
+      const { data, error } = await supabase.from("offline_donations").delete().eq("id", deleting.id).select("id");
+      if (error || !data?.length) {
+        setDeleteError("Could not delete this transaction. Please try again.");
+        return;
+      }
+      setDeleting(null);
+      setBook("all");
+      await reload();
+      toast.success("Transaction deleted");
+    } catch {
+      setDeleteError("Could not delete this transaction. Please try again.");
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
+
+  const requestDelete = (row: Offline) => { setDeleteError(""); setDeleting(row); };
   const bookSlug = book === "all" ? "all" : `book-${book.replace(/[^a-z0-9]+/gi, "-")}`;
   const methodSlug = method === "all" ? "" : `-${method.toLowerCase()}`;
 
@@ -171,7 +197,10 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
                 <div><dt className="text-xs text-muted-foreground">Payment</dt><dd className="break-words">{r.payment_type} · {r.payment_method}</dd></div>
                 {r.upi_transaction_id && <div className="col-span-2"><dt className="text-xs text-muted-foreground">UPI Transaction ID</dt><dd className="break-all">{r.upi_transaction_id}</dd></div>}
               </dl>
-              <Button className="mt-3 min-h-11" size="sm" variant="outline" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="mr-2 h-4 w-4" />Edit receipt</Button>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button className="min-h-11" size="sm" variant="outline" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="mr-2 h-4 w-4" />Edit receipt</Button>
+                <Button className="min-h-11 text-destructive" size="sm" variant="outline" onClick={() => requestDelete(r)}><Trash2 className="mr-2 h-4 w-4" />Delete transaction</Button>
+              </div>
             </article>)}
           </div>
           <div className="hidden overflow-x-auto rounded-lg border border-border bg-card md:block">
@@ -189,7 +218,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
                   <td>{i + 1}</td><td>{r.collected_by}</td><td>{r.book_no}</td><td>{r.receipt_no}</td><td>{fmtDate(r.receipt_date)}</td>
                   <td>{r.donor_name}</td><td className="text-right font-semibold">{inr(Number(r.amount))}</td><td>{r.payment_type}</td>
                   <td>{r.payment_method}</td><td className="break-all">{r.upi_transaction_id || "—"}</td>
-                  <td><Button size="sm" variant="ghost" aria-label="Edit receipt" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="h-4 w-4" /></Button></td>
+                  <td><div className="flex gap-1"><Button size="sm" variant="ghost" aria-label="Edit receipt" title="Edit receipt" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="h-4 w-4" /></Button><Button size="sm" variant="ghost" className="text-destructive" aria-label="Delete transaction" title="Delete transaction" onClick={() => requestDelete(r)}><Trash2 className="h-4 w-4" /></Button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -221,6 +250,28 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={deleting !== null} onOpenChange={(open) => { if (!open && !deleteBusy) setDeleting(null); }}>
+        <AlertDialogContent className="max-h-[90svh] w-[calc(100%-1.5rem)] overflow-y-auto rounded-lg p-4 sm:p-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this transaction?</AlertDialogTitle>
+            <AlertDialogDescription>This permanently removes the receipt and updates the collection totals. This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          {deleting && <dl className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            {[
+              ["Donor", deleting.donor_name], ["Amount", inr(Number(deleting.amount))],
+              ["Book Detail", deleting.book_no], ["Receipt No.", deleting.receipt_no],
+              ["Receipt Date", fmtDate(deleting.receipt_date)], ["Collected By", deleting.collected_by],
+              ["Type of Payment", deleting.payment_type], ["Payment Method", deleting.payment_method],
+              ["UPI Transaction ID", deleting.upi_transaction_id || "Not provided"],
+            ].map(([label, value]) => <div key={label} className="min-w-0"><dt className="text-muted-foreground">{label}</dt><dd className="break-words font-medium text-foreground">{value}</dd></div>)}
+          </dl>}
+          {deleteError && <p role="alert" className="text-sm text-destructive">{deleteError}</p>}
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel disabled={deleteBusy}>Cancel</AlertDialogCancel>
+            <Button variant="destructive" disabled={deleteBusy} onClick={deleteTransaction}><Trash2 className="mr-2 h-4 w-4" />{deleteBusy ? "Deleting…" : "Proceed & delete"}</Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
