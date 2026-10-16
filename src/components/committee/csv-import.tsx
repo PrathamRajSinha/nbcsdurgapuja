@@ -82,13 +82,19 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
   body.forEach((r, n) => {
     const get = (k: string) => (r[idx[k] ?? -1] ?? "").trim();
     const line = `Row ${n + 2}`;
-    const book = get("book_no"), receipt = get("receipt_no");
+    let book = get("book_no");
+    const receipt = get("receipt_no");
     if (!book && !receipt && !get("donor_name")) return;
+    if (!book) {
+      // No Book Detail: put the row into a newly created book instead of skipping it.
+      book = autoBook ??= `New Book ${new Date().toISOString().slice(0, 10)}`;
+      createdBook = true;
+    }
     const amount = Number(get("amount").replace(/[₹,\s]|rs\.?/gi, ""));
     const method = normMethod(get("payment_method"));
     const rd = parseDate(get("receipt_date") || get("collection_date"));
     const problems = [
-      !book && "Book Detail", !receipt && "Receipt No.", !get("collected_by") && "Collected By", !get("donor_name") && "donor name",
+      !receipt && "Receipt No.", !get("collected_by") && "Collected By", !get("donor_name") && "donor name",
       !(amount > 0) && "amount", !get("payment_type") && "type of payment", !method && "Cash/Cheque/UPI", !rd && "date",
     ].filter(Boolean);
     if (problems.length) return void skipped.push(`${line}: missing or invalid ${problems.join(", ")}`);
