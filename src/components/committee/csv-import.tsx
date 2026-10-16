@@ -33,12 +33,17 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
     try {
       const rows = parseCsv(await file.text());
       const hi = rows.findIndex((r) => r.some((c) => /book/i.test(c)) || r.some((c) => /reference id/i.test(c)));
-      if (hi < 0) throw new Error("Couldn't find a header row with Book Detail or Reference ID.");
-      const headerRow = rows[hi];
-      if (!headerRow) throw new Error("Could not read the CSV header.");
-      const header = headerRow.map(norm);
-      const body = rows.slice(hi + 1);
-      setResult(header.includes("referenceid") ? await importWebsite(header, body) : await importOffline(header, body));
+      if (hi < 0) {
+        // No header row: assume the standard receipt-book column order and import everything as offline receipts.
+        const header = ["collectedby", "bookdetail", "receiptno", "date", "donorname", "amount", "typeofpayment", "cash/cheque/upi", "transactionid"];
+        setResult(await importOffline(header, rows));
+      } else {
+        const headerRow = rows[hi];
+        if (!headerRow) throw new Error("Could not read the CSV header.");
+        const header = headerRow.map(norm);
+        const body = rows.slice(hi + 1);
+        setResult(header.includes("referenceid") ? await importWebsite(header, body) : await importOffline(header, body));
+      }
       await onDone();
     } catch (e) {
       setResult({ kind: "error", added: 0, updated: 0, skipped: [(e as Error).message] });
@@ -51,7 +56,7 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-semibold text-foreground">Upload CSV</p>
-          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book Detail + Receipt No. are updated). Website-donation CSVs mark matching entries Verified.</p>
+          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book Detail + Receipt No. are updated). Rows without a Book Detail go into a new book automatically, and sheets without a header row are read in the standard column order. Website-donation CSVs mark matching entries Verified.</p>
         </div>
         <Button variant="outline" disabled={busy} onClick={() => ref.current?.click()}><Upload className="mr-2 h-4 w-4" />{busy ? "Importing…" : "Upload CSV"}</Button>
         <input ref={ref} type="file" accept=".csv,text/csv" className="hidden" onChange={(e) => { handle(e.target.files?.[0]); e.target.value = ""; }} />
@@ -73,17 +78,25 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
   const missing = Object.entries(idx).filter(([k, i]) => i < 0 && k !== "receipt_date" && k !== "collection_date" && k !== "upi_transaction_id").map(([k]) => k.replace("_", " "));
   if (missing.length) throw new Error(`Missing columns: ${missing.join(", ")}`);
   const skipped: string[] = [];
+  let autoBook: string | null = null;
+  let createdBook = false;
   const map = new Map<string, { book_no: string; receipt_no: string; [k: string]: unknown }>();
   body.forEach((r, n) => {
     const get = (k: string) => (r[idx[k] ?? -1] ?? "").trim();
     const line = `Row ${n + 2}`;
-    const book = get("book_no"), receipt = get("receipt_no");
+    let book = get("book_no");
+    const receipt = get("receipt_no");
     if (!book && !receipt && !get("donor_name")) return;
+    if (!book) {
+      // No Book Detail: put the row into a newly created book instead of skipping it.
+      book = autoBook ??= `New Book ${new Date().toISOString().slice(0, 10)}`;
+      createdBook = true;
+    }
     const amount = Number(get("amount").replace(/[₹,\s]|rs\.?/gi, ""));
     const method = normMethod(get("payment_method"));
     const rd = parseDate(get("receipt_date") || get("collection_date"));
     const problems = [
-      !book && "Book Detail", !receipt && "Receipt No.", !get("collected_by") && "Collected By", !get("donor_name") && "donor name",
+      !receipt && "Receipt No.", !get("collected_by") && "Collected By", !get("donor_name") && "donor name",
       !(amount > 0) && "amount", !get("payment_type") && "type of payment", !method && "Cash/Cheque/UPI", !rd && "date",
     ].filter(Boolean);
     if (problems.length) return void skipped.push(`${line}: missing or invalid ${problems.join(", ")}`);
@@ -99,6 +112,7 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
     const { error } = await supabase.from("offline_donations").upsert(rows.slice(i, i + 500) as never, { onConflict: "book_no,receipt_no" });
     if (error) throw new Error("Could not save the rows. Please try again.");
   }
+  if (createdBook && autoBook) skipped.unshift(`Rows without Book Detail were added to a new book: ${autoBook}`);
   return { kind: "Offline receipts", added: rows.length - updated, updated, skipped };
 }
 
