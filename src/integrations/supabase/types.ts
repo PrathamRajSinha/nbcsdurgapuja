@@ -81,6 +81,7 @@ export type Database = {
           receipt_no: string
           updated_at: string
           updated_by: string | null
+          upi_transaction_id: string | null
         }
         Insert: {
           amount: number
@@ -97,6 +98,7 @@ export type Database = {
           receipt_no: string
           updated_at?: string
           updated_by?: string | null
+          upi_transaction_id?: string | null
         }
         Update: {
           amount?: number
@@ -113,6 +115,7 @@ export type Database = {
           receipt_no?: string
           updated_at?: string
           updated_by?: string | null
+          upi_transaction_id?: string | null
         }
         Relationships: []
       }

@@ -11,12 +11,12 @@ import { downloadCsv, fmtDate, inr, toCsv } from "@/lib/committee-csv";
 
 export type Offline = {
   id: string; collected_by: string; book_no: string; receipt_no: string; receipt_date: string;
-  donor_name: string; amount: number; payment_type: string; payment_method: string; collection_date: string;
+  donor_name: string; amount: number; payment_type: string; payment_method: string; collection_date: string; upi_transaction_id: string | null;
 };
 
 export const PAYMENT_TYPES = ["Donation", "Membership"];
 export const METHODS = ["Cash", "Cheque", "UPI"] as const;
-export const OFFLINE_HEADER = ["Serial No.", "Collected By", "Book No.", "Receipt No.", "Receipt Date", "Name of the Donor", "Amount", "Type of Payment", "Cash/Cheque/UPI"];
+export const OFFLINE_HEADER = ["Serial No.", "Collected By", "Book Detail", "Receipt No.", "Receipt Date", "Name of the Donor", "Amount", "Type of Payment", "Cash/Cheque/UPI", "UPI Transaction ID"];
 
 const year = new Date().getFullYear();
 const cmpBook = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true });
@@ -34,7 +34,7 @@ export function exportOffline(rows: Offline[], filename: string) {
   const sorted = [...rows].sort((a, b) => cmpBook(a.book_no, b.book_no) || cmpBook(a.receipt_no, b.receipt_no));
   downloadCsv(filename, toCsv(OFFLINE_HEADER, sorted.map((r, i) => [
     i + 1, r.collected_by, r.book_no, r.receipt_no, fmtDate(r.receipt_date), r.donor_name,
-    Number(r.amount), r.payment_type, r.payment_method,
+    Number(r.amount), r.payment_type, r.payment_method, r.upi_transaction_id ?? "",
   ])));
 }
 
@@ -58,7 +58,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
   const shown = useMemo(() => {
     const s = q.trim().toLowerCase();
     const list = inBook.filter((r) => (method === "all" || r.payment_method === method) &&
-      (!s || [r.donor_name, r.receipt_no, r.book_no, r.collected_by, r.payment_type, String(r.amount)].some((v) => v.toLowerCase().includes(s))));
+      (!s || [r.donor_name, r.receipt_no, r.book_no, r.collected_by, r.payment_type, r.upi_transaction_id ?? "", String(r.amount)].some((v) => v.toLowerCase().includes(s))));
     return list.sort((a, b) => {
       const k = sort.key;
       const c = k === "amount" ? Number(a.amount) - Number(b.amount) : k === "receipt_no" ? cmpBook(a.receipt_no, b.receipt_no) : String(a[k]).localeCompare(String(b[k]));
@@ -89,7 +89,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
           donor_name: f.donor_name ?? "", ...(f.amount != null ? { amount: f.amount } : {}), payment_type: f.payment_type ?? "", payment_method: f.payment_method ?? "",
         });
         setUncertain(f.uncertain ?? []);
-        toast.success("Details read — please check every field and enter the Book No.");
+        toast.success("Details read — please check every field and enter the Book Detail");
       } else {
         toast.error(res.error);
         setEditing({ book_no: "" });
@@ -117,7 +117,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
       <div className="flex gap-2 overflow-x-auto pb-2">
         {["all", ...books].map((b) => (
           <Button key={b} className="shrink-0" size="sm" variant={book === b ? "default" : "outline"} onClick={() => setBook(b)}>
-            {b === "all" ? "All Offline Donations" : `Book No. ${b}`}
+            {b === "all" ? "All Offline Donations" : `Book Detail ${b}`}
           </Button>
         ))}
       </div>
@@ -144,14 +144,14 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
         {books.length > 0 && (
           <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value="" aria-label="Download a book"
             onChange={(e) => { const b = e.target.value; if (b) exportOffline(rows.filter((r) => r.book_no === b), `nbsc-offline-donations-book-${b}-${year}.csv`); }}>
-            <option value="">Download by book…</option>{books.map((b) => <option key={b} value={b}>Book No. {b}</option>)}
+            <option value="">Download by book…</option>{books.map((b) => <option key={b} value={b}>Book Detail {b}</option>)}
           </select>
         )}
       </div>
 
       {shown.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
-          {inBook.length === 0 ? (book === "all" ? "No offline receipts recorded yet." : `No receipts in Book No. ${book} yet.`) : "No receipts match your search."}
+          {inBook.length === 0 ? (book === "all" ? "No offline receipts recorded yet." : `No receipts in Book Detail ${book} yet.`) : "No receipts match your search."}
         </p>
       ) : (
         <div>
@@ -165,10 +165,11 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
             {shown.map((r) => <article key={r.id} className="rounded-lg border border-border bg-card p-4 text-sm">
               <div className="flex items-start justify-between gap-3"><strong className="min-w-0 break-words text-foreground">{r.donor_name}</strong><span className="shrink-0 font-semibold text-foreground">{inr(Number(r.amount))}</span></div>
               <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-foreground">
-                <div><dt className="text-xs text-muted-foreground">Book / Receipt</dt><dd className="break-words">{r.book_no} / {r.receipt_no}</dd></div>
+                <div><dt className="text-xs text-muted-foreground">Book Detail / Receipt</dt><dd className="break-words">{r.book_no} / {r.receipt_no}</dd></div>
                 <div><dt className="text-xs text-muted-foreground">Receipt date</dt><dd>{fmtDate(r.receipt_date)}</dd></div>
                 <div><dt className="text-xs text-muted-foreground">Collected by</dt><dd className="break-words">{r.collected_by}</dd></div>
                 <div><dt className="text-xs text-muted-foreground">Payment</dt><dd className="break-words">{r.payment_type} · {r.payment_method}</dd></div>
+                {r.upi_transaction_id && <div className="col-span-2"><dt className="text-xs text-muted-foreground">UPI Transaction ID</dt><dd className="break-all">{r.upi_transaction_id}</dd></div>}
               </dl>
               <Button className="mt-3 min-h-11" size="sm" variant="outline" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="mr-2 h-4 w-4" />Edit receipt</Button>
             </article>)}
@@ -177,9 +178,9 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
           <table className="w-full min-w-[60rem] text-sm">
             <thead className="bg-muted text-left text-muted-foreground">
               <tr className="[&>th]:px-3 [&>th]:py-2">
-                <th>Serial No.</th><th>Collected By</th><th>Book No.</th><th>{sortBtn("receipt_no", "Receipt No.")}</th><th>{sortBtn("receipt_date", "Receipt Date")}</th>
+                <th>Serial No.</th><th>Collected By</th><th>Book Detail</th><th>{sortBtn("receipt_no", "Receipt No.")}</th><th>{sortBtn("receipt_date", "Receipt Date")}</th>
                 <th>{sortBtn("donor_name", "Name of the Donor")}</th><th className="text-right">{sortBtn("amount", "Amount")}</th><th>Type of Payment</th>
-                <th>Cash/Cheque/UPI</th><th />
+                <th>Cash/Cheque/UPI</th><th>UPI Transaction ID</th><th />
               </tr>
             </thead>
             <tbody>
@@ -187,7 +188,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
                 <tr key={r.id} className="border-t border-border text-foreground [&>td]:px-3 [&>td]:py-2">
                   <td>{i + 1}</td><td>{r.collected_by}</td><td>{r.book_no}</td><td>{r.receipt_no}</td><td>{fmtDate(r.receipt_date)}</td>
                   <td>{r.donor_name}</td><td className="text-right font-semibold">{inr(Number(r.amount))}</td><td>{r.payment_type}</td>
-                  <td>{r.payment_method}</td>
+                  <td>{r.payment_method}</td><td className="break-all">{r.upi_transaction_id || "—"}</td>
                   <td><Button size="sm" variant="ghost" aria-label="Edit receipt" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="h-4 w-4" /></Button></td>
                 </tr>
               ))}
@@ -231,7 +232,7 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
   const [f, setF] = useState({
     collected_by: initial.collected_by ?? "", book_no: initial.book_no ?? "", receipt_no: initial.receipt_no ?? "",
     receipt_date: initial.receipt_date ?? "", donor_name: initial.donor_name ?? "", amount: initial.amount != null ? String(initial.amount) : "",
-    payment_type: initial.payment_type ?? "", payment_method: initial.payment_method ?? "",
+    payment_type: initial.payment_type ?? "", payment_method: initial.payment_method ?? "", upi_transaction_id: initial.upi_transaction_id ?? "",
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -240,37 +241,37 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
     setF((current) => ({ ...current, [k]: e.target.value }));
     setReviewed((current) => current.includes(k) ? current : [...current, k]);
   };
-  const needsReview = (k: keyof typeof f) => scanned && (!f[k] || (uncertain.includes(k) && !reviewed.includes(k)));
+  const needsReview = (k: keyof typeof f) => scanned && k !== "upi_transaction_id" && (!f[k] || (uncertain.includes(k) && !reviewed.includes(k)));
   const flag = (k: keyof typeof f) => needsReview(k) ? "border-destructive bg-destructive/5 ring-1 ring-destructive focus-visible:ring-destructive" : "";
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     setError("");
     const v = Object.fromEntries(Object.entries(f).map(([k, x]) => [k, x.trim()])) as typeof f;
-    if (Object.values(v).some((x) => !x)) return setError("Please fill in every field.");
+    if (Object.entries(v).some(([k, x]) => k !== "upi_transaction_id" && !x)) return setError("Please fill in every field.");
     const amount = Number(v.amount.replace(/[₹,\s]/g, ""));
     if (!Number.isFinite(amount) || amount <= 0) return setError("Amount must be greater than zero.");
     if (!METHODS.includes(v.payment_method as (typeof METHODS)[number])) return setError("Choose Cash, Cheque or UPI.");
     const dup = rows.find((r) => r.book_no === v.book_no && r.receipt_no === v.receipt_no && r.id !== initial.id);
-    if (dup) return setError(`Receipt No. ${v.receipt_no} is already recorded in Book No. ${v.book_no}.`);
+    if (dup) return setError(`Receipt No. ${v.receipt_no} is already recorded in Book Detail ${v.book_no}.`);
     setSaving(true);
-    const row = { ...v, amount, collection_date: v.receipt_date };
+    const row = { ...v, amount, collection_date: v.receipt_date, upi_transaction_id: v.upi_transaction_id || null };
     const { error: err } = initial.id
       ? await supabase.from("offline_donations").update(row).eq("id", initial.id)
       : await supabase.from("offline_donations").insert(row);
     setSaving(false);
-    if (err) return setError(err.code === "23505" ? `Receipt No. ${v.receipt_no} is already recorded in Book No. ${v.book_no}.` : "Could not save. Please try again.");
+    if (err) return setError(err.code === "23505" ? `Receipt No. ${v.receipt_no} is already recorded in Book Detail ${v.book_no}.` : "Could not save. Please try again.");
     toast.success(initial.id ? "Receipt updated" : "Donation saved");
     await onSaved();
   }
 
   const field = (k: keyof typeof f, label: string, input: React.ReactNode) => (
-    <label className="grid min-w-0 gap-1 text-sm"><span className="font-medium text-foreground">{label} *</span>{input}{needsReview(k) && <span className="text-xs text-destructive">{k === "book_no" ? "Enter the book number" : "Missing or unclear — check this field"}</span>}</label>
+    <label className="grid min-w-0 gap-1 text-sm"><span className="font-medium text-foreground">{label}{k === "upi_transaction_id" ? " (optional)" : " *"}</span>{input}{needsReview(k) && <span className="text-xs text-destructive">{k === "book_no" ? "Enter the book detail" : "Missing or unclear — check this field"}</span>}</label>
   );
 
   return (
     <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
-      {field("book_no", "Book No.", <Input className={flag("book_no")} value={f.book_no} onChange={set("book_no")} placeholder="e.g. 64" required autoFocus={scanned} />)}
+      {field("book_no", "Book Detail", <Input className={flag("book_no")} value={f.book_no} onChange={set("book_no")} placeholder="e.g. Book 64, Main gate, or collector name" required autoFocus={scanned} />)}
       {field("receipt_no", "Receipt No.", <Input className={flag("receipt_no")} value={f.receipt_no} onChange={set("receipt_no")} placeholder="As printed" required />)}
       {field("collected_by", "Collected By", <Input className={flag("collected_by")} value={f.collected_by} onChange={set("collected_by")} required />)}
       {field("donor_name", "Name of the Donor", <Input className={flag("donor_name")} value={f.donor_name} onChange={set("donor_name")} required />)}
@@ -287,7 +288,8 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
         </select>
       ))}
       {field("receipt_date", "Receipt Date", <Input className={flag("receipt_date")} type="date" value={f.receipt_date} onChange={set("receipt_date")} required />)}
-      {scanned && <p className="text-xs text-muted-foreground sm:col-span-2">Red fields were missing or unclear in the photo. Book No. must always be entered by hand.</p>}
+      {field("upi_transaction_id", "UPI Transaction ID", <Input value={f.upi_transaction_id} onChange={set("upi_transaction_id")} placeholder="Enter if available" />)}
+      {scanned && <p className="text-xs text-muted-foreground sm:col-span-2">Red fields were missing or unclear in the photo. Book Detail must always be entered by hand.</p>}
       {error && <p className="text-sm text-destructive sm:col-span-2">{error}</p>}
       <div className="flex flex-col-reverse gap-2 sm:col-span-2 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>

@@ -15,6 +15,13 @@
       "when": 1792126105106,
       "tag": "0001_deprecate_offline_collection_date",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792128881642,
+      "tag": "0002_optional_offline_upi_transaction_id",
+      "breakpoints": true
     }
   ]
 }
