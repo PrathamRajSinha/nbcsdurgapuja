@@ -85,7 +85,10 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
     try {
       const dataUrl = await shrink(file);
       setScanImage(dataUrl);
-      const res = await scan({ data: { image: dataUrl } });
+      const res = await Promise.race([
+        scan({ data: { image: dataUrl } }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 70_000)),
+      ]);
       if (res.ok) {
         const f = res.fields;
         setEditing({
