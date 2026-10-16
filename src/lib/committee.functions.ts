@@ -14,6 +14,7 @@ export type ScannedReceipt = {
   amount?: number | undefined;
   payment_type?: string | undefined;
   payment_method?: "Cash" | "Cheque" | "UPI" | undefined;
+  upi_transaction_id?: string | undefined;
   uncertain?: string[] | undefined;
 };
 
@@ -36,6 +37,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
       amount: { type: ["number", "null"] },
       payment_type: { type: ["string", "null"], enum: ["Donation", "Membership", null] },
       payment_method: { type: ["string", "null"], enum: ["Cash", "Cheque", "UPI", null] },
+      upi_transaction_id: { type: ["string", "null"], description: "UPI transaction / reference ID printed on the receipt (e.g. UPI/Ref No., txn ID). Null when absent." },
       uncertain: { type: "array", items: { type: "string" } },
     };
     const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
