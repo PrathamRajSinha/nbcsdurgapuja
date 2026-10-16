@@ -25,3 +25,4 @@
 
 - Donations are submitted through the submitDonation server function (Zod-validated, admin client) into the public.donations table and stored as PENDING_VERIFICATION; there is deliberately no public read path and no payment-success claim in the UI. Why: the committee verifies UPI payments manually and donor data must not be publicly readable.
 - Offline receipt-book donations live in public.offline_donations (committee-only RLS, unique Book No. + Receipt No., never auto-numbered); CSV uploads upsert on that pair and receipt photos are read by the committee-only scanReceipt server fn but never saved without confirmation. Why: physical books share one receipt sequence and records must stay accurate.
+- Keep committee CSV import available below the active section, render offline receipts as cards on phones and a table on desktop, and gate the scan form behind extraction completion; this preserves imports and makes scan review unambiguous.
