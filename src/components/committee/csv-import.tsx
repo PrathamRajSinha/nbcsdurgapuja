@@ -16,10 +16,11 @@ const OFFLINE_COLS: Record<string, (h: string) => boolean> = {
   amount: (h) => h.startsWith("amount"),
   payment_type: (h) => h.includes("typeofpayment") || h === "paymenttype" || h === "type",
   payment_method: (h) => h.includes("cash/") || h.includes("method") || h === "mode" || h.includes("modeofpayment"),
+  upi_transaction_id: (h) => h.includes("transactionid") || h.includes("utr"),
   collection_date: (h) => h.includes("collection"),
 };
 
-/** Upload a CSV: offline receipt sheets go into offline donations (matched by Book No. + Receipt No.);
+/** Upload a CSV: offline receipt sheets go into offline donations (matched by Book Detail + Receipt No.);
  *  website-donation exports update verification status for matching reference IDs. */
 export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
   const ref = useRef<HTMLInputElement>(null);
@@ -32,8 +33,10 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
     try {
       const rows = parseCsv(await file.text());
       const hi = rows.findIndex((r) => r.some((c) => /book/i.test(c)) || r.some((c) => /reference id/i.test(c)));
-      if (hi < 0) throw new Error("Couldn't find a header row with Book No. or Reference ID.");
-      const header = rows[hi]!.map(norm);
+      if (hi < 0) throw new Error("Couldn't find a header row with Book Detail or Reference ID.");
+      const headerRow = rows[hi];
+      if (!headerRow) throw new Error("Could not read the CSV header.");
+      const header = headerRow.map(norm);
       const body = rows.slice(hi + 1);
       setResult(header.includes("referenceid") ? await importWebsite(header, body) : await importOffline(header, body));
       await onDone();
@@ -48,7 +51,7 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-semibold text-foreground">Upload CSV</p>
-          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book No. + Receipt No. are updated). Website-donation CSVs mark matching entries Verified.</p>
+          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book Detail + Receipt No. are updated). Website-donation CSVs mark matching entries Verified.</p>
         </div>
         <Button variant="outline" disabled={busy} onClick={() => ref.current?.click()}><Upload className="mr-2 h-4 w-4" />{busy ? "Importing…" : "Upload CSV"}</Button>
         <input ref={ref} type="file" accept=".csv,text/csv" className="hidden" onChange={(e) => { handle(e.target.files?.[0]); e.target.value = ""; }} />
@@ -67,7 +70,7 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
 
 async function importOffline(header: string[], body: string[][]): Promise<Result> {
   const idx = Object.fromEntries(Object.entries(OFFLINE_COLS).map(([k, test]) => [k, header.findIndex(test)])) as Record<string, number>;
-  const missing = Object.entries(idx).filter(([k, i]) => i < 0 && k !== "receipt_date" && k !== "collection_date").map(([k]) => k.replace("_", " "));
+  const missing = Object.entries(idx).filter(([k, i]) => i < 0 && k !== "receipt_date" && k !== "collection_date" && k !== "upi_transaction_id").map(([k]) => k.replace("_", " "));
   if (missing.length) throw new Error(`Missing columns: ${missing.join(", ")}`);
   const skipped: string[] = [];
   const map = new Map<string, { book_no: string; receipt_no: string; [k: string]: unknown }>();
@@ -80,13 +83,13 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
     const method = normMethod(get("payment_method"));
     const rd = parseDate(get("receipt_date") || get("collection_date"));
     const problems = [
-      !book && "Book No.", !receipt && "Receipt No.", !get("collected_by") && "Collected By", !get("donor_name") && "donor name",
+      !book && "Book Detail", !receipt && "Receipt No.", !get("collected_by") && "Collected By", !get("donor_name") && "donor name",
       !(amount > 0) && "amount", !get("payment_type") && "type of payment", !method && "Cash/Cheque/UPI", !rd && "date",
     ].filter(Boolean);
     if (problems.length) return void skipped.push(`${line}: missing or invalid ${problems.join(", ")}`);
     const key = `${book}|${receipt}`;
     if (map.has(key)) skipped.push(`${line}: Book ${book} receipt ${receipt} appears twice — kept the last one`);
-    map.set(key, { collected_by: get("collected_by"), book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: get("donor_name"), amount, payment_type: get("payment_type"), payment_method: method, collection_date: rd });
+    map.set(key, { collected_by: get("collected_by"), book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: get("donor_name"), amount, payment_type: get("payment_type"), payment_method: method, collection_date: rd, ...(idx.upi_transaction_id >= 0 ? { upi_transaction_id: get("upi_transaction_id") || null } : {}) });
   });
   const rows = [...map.values()];
   const { data: existing } = await supabase.from("offline_donations").select("book_no, receipt_no");
