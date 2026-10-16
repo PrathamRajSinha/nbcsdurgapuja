@@ -1,11 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import type { User } from "@supabase/supabase-js";
-import { Download, LogOut, Search } from "lucide-react";
+import { Download, ExternalLink, LogOut, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PageShell } from "@/components/site-chrome";
+import { OfflineSection, Stat, totals, type Offline } from "@/components/committee/offline-donations";
+import { CsvImport } from "@/components/committee/csv-import";
+import { inr } from "@/lib/committee-csv";
+import { membershipForm } from "@/lib/site-content";
+import { Toaster } from "@/components/ui/sonner";
+import logoAsset from "@/assets/logo.png.asset.json";
 
 export const Route = createFileRoute("/committee-only")({
   staticData: { sitemap: false },
@@ -45,11 +50,21 @@ function CommitteePage() {
   }, []);
 
   return (
-    <PageShell>
-      <main className="mx-auto min-h-[70vh] max-w-5xl px-4 pb-20 pt-32">
-        {!ready ? null : user ? <Dashboard /> : <Login />}
+    <div className="min-h-svh bg-background">
+      <Toaster position="top-center" />
+      <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <div className="flex items-center gap-3">
+            <img src={logoAsset.url} alt="NBCS" className="h-10 w-10" />
+            <div><p className="font-display text-lg leading-tight text-foreground">NBCS Committee</p><p className="text-xs text-muted-foreground">Donation management</p></div>
+          </div>
+          {user && <Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>}
+        </div>
+      </header>
+      <main className="mx-auto max-w-6xl px-4 pb-20 pt-6">
+        {!ready ? null : user ? <Committee /> : <div className="pt-16"><Login /></div>}
       </main>
-    </PageShell>
+    </div>
   );
 }
 
@@ -78,14 +93,82 @@ function Login() {
   );
 }
 
-function Dashboard() {
-  const [rows, setRows] = useState<Donation[] | null>(null);
-  const [q, setQ] = useState("");
+const TABS = ["Overview", "Website Donations", "Offline Donations", "Memberships"] as const;
 
-  useEffect(() => {
-    supabase.from("donations").select("*").order("created_at", { ascending: false })
-      .then(({ data }) => setRows((data as Donation[]) ?? []));
-  }, []);
+function Committee() {
+  const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
+  const [web, setWeb] = useState<Donation[] | null>(null);
+  const [off, setOff] = useState<Offline[] | null>(null);
+  const loadWeb = async () => { const { data } = await supabase.from("donations").select("*").order("created_at", { ascending: false }); setWeb((data as Donation[]) ?? []); };
+  const loadOff = async () => { const { data } = await supabase.from("offline_donations").select("*").order("created_at", { ascending: false }); setOff((data as Offline[]) ?? []); };
+  const reload = async () => { await Promise.all([loadWeb(), loadOff()]); };
+  useEffect(() => { reload(); }, []);
+
+  return (
+    <div className="space-y-6">
+      <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Committee sections">
+        {TABS.map((t) => <Button key={t} size="sm" variant={tab === t ? "default" : "outline"} className="shrink-0" onClick={() => setTab(t)}>{t}</Button>)}
+      </nav>
+      {web === null || off === null ? <p>Loading…</p> : (
+        <>
+          {tab === "Overview" && <Overview web={web} off={off} reload={reload} />}
+          {tab === "Website Donations" && <Dashboard rows={web} setRows={setWeb} />}
+          {tab === "Offline Donations" && <OfflineSection rows={off} reload={loadOff} />}
+          {tab === "Memberships" && <Memberships off={off} />}
+        </>
+      )}
+    </div>
+  );
+}
+
+function Overview({ web, off, reload }: { web: Donation[]; off: Offline[]; reload: () => Promise<void> }) {
+  const t = totals(off);
+  const verified = web.filter((r) => r.payment_status === "VERIFIED");
+  const books = [...new Set(off.map((r) => r.book_no))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  return (
+    <div className="space-y-6">
+      <section className="space-y-3"><h2 className="font-display text-2xl text-foreground">Website (online)</h2>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Stat label="Verified website donations" value={inr(verified.reduce((n, r) => n + r.amount, 0))} />
+          <Stat label="Verified entries" value={String(verified.length)} />
+          <Stat label="Pending verification" value={String(web.length - verified.length)} />
+        </div></section>
+      <section className="space-y-3"><h2 className="font-display text-2xl text-foreground">Receipt books (offline)</h2>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          <Stat label="Total offline collections" value={inr(t.total)} /><Stat label="Cash" value={inr(t.cash)} />
+          <Stat label="UPI" value={inr(t.upi)} /><Stat label="Cheque" value={inr(t.cheque)} />
+          <Stat label="Receipts recorded" value={String(t.count)} /><Stat label="Receipt books" value={String(t.books)} />
+        </div>
+        {books.length > 0 && (
+          <div className="overflow-x-auto rounded-xl border border-border bg-card"><table className="w-full text-sm">
+            <thead className="bg-muted text-left text-muted-foreground"><tr className="[&>th]:px-3 [&>th]:py-2"><th>Book No.</th><th>Receipts</th><th className="text-right">Total</th></tr></thead>
+            <tbody>{books.map((b) => { const bt = totals(off.filter((r) => r.book_no === b)); return (
+              <tr key={b} className="border-t border-border text-foreground [&>td]:px-3 [&>td]:py-2"><td>{b}</td><td>{bt.count}</td><td className="text-right">{inr(bt.total)}</td></tr>); })}</tbody>
+          </table></div>
+        )}</section>
+      <CsvImport onDone={reload} />
+    </div>
+  );
+}
+
+function Memberships({ off }: { off: Offline[] }) {
+  const m = off.filter((r) => r.payment_type === "Membership");
+  return (
+    <div className="space-y-4">
+      <div className="rounded-xl border border-border bg-card p-4">
+        <p className="font-semibold text-foreground">Membership sign-ups</p>
+        <p className="text-sm text-muted-foreground">New members register through the Google Form linked from the website's "Become a member" button.</p>
+        <Button asChild variant="outline" size="sm" className="mt-3"><a href={membershipForm.url} target="_blank" rel="noopener noreferrer">Open membership form <ExternalLink className="ml-2 h-4 w-4" /></a></Button>
+      </div>
+      <div className="grid grid-cols-2 gap-3"><Stat label="Membership receipts" value={String(m.length)} /><Stat label="Membership collections" value={inr(totals(m).total)} /></div>
+      {m.length > 0 && <ul className="divide-y divide-border rounded-xl border border-border bg-card text-sm">{m.map((r) => (
+        <li key={r.id} className="flex justify-between gap-2 p-3 text-foreground"><span>{r.donor_name} · Book {r.book_no} / {r.receipt_no}</span><span>{inr(Number(r.amount))}</span></li>))}</ul>}
+    </div>
+  );
+}
+
+function Dashboard({ rows, setRows }: { rows: Donation[]; setRows: React.Dispatch<React.SetStateAction<Donation[] | null>> }) {
+  const [q, setQ] = useState("");
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -135,12 +218,11 @@ function Dashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-3xl text-foreground">Donation submissions</h1>
+        <h1 className="font-display text-3xl text-foreground">Website donations</h1>
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="outline" onClick={downloadCsv} disabled={filtered.length === 0}>
             <Download className="mr-2 h-4 w-4" />Download CSV
           </Button>
-          <Button variant="outline" onClick={() => supabase.auth.signOut()}><LogOut className="mr-2 h-4 w-4" />Sign out</Button>
         </div>
       </div>
       <div className="relative">
