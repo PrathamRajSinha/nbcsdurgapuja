@@ -16,7 +16,7 @@ export type Offline = {
 
 export const PAYMENT_TYPES = ["Donation", "Membership"];
 export const METHODS = ["Cash", "Cheque", "UPI"] as const;
-export const OFFLINE_HEADER = ["Serial No.", "Collected By", "Book No.", "Receipt No.", "Receipt Date", "Name of the Donor", "Amount", "Type of Payment", "Cash/Cheque/UPI", "Date of Collection"];
+export const OFFLINE_HEADER = ["Serial No.", "Collected By", "Book No.", "Receipt No.", "Receipt Date", "Name of the Donor", "Amount", "Type of Payment", "Cash/Cheque/UPI"];
 
 const year = new Date().getFullYear();
 const cmpBook = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true });
@@ -34,11 +34,11 @@ export function exportOffline(rows: Offline[], filename: string) {
   const sorted = [...rows].sort((a, b) => cmpBook(a.book_no, b.book_no) || cmpBook(a.receipt_no, b.receipt_no));
   downloadCsv(filename, toCsv(OFFLINE_HEADER, sorted.map((r, i) => [
     i + 1, r.collected_by, r.book_no, r.receipt_no, fmtDate(r.receipt_date), r.donor_name,
-    Number(r.amount), r.payment_type, r.payment_method, fmtDate(r.collection_date),
+    Number(r.amount), r.payment_type, r.payment_method,
   ])));
 }
 
-type SortKey = "collection_date" | "amount" | "receipt_no" | "donor_name";
+type SortKey = "receipt_date" | "amount" | "receipt_no" | "donor_name";
 
 export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () => Promise<void> }) {
   const [book, setBook] = useState<string>("all");
@@ -86,7 +86,6 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
         setEditing({
           book_no: "", collected_by: f.collected_by ?? "", receipt_no: f.receipt_no ?? "", receipt_date: f.receipt_date ?? "",
           donor_name: f.donor_name ?? "", ...(f.amount != null ? { amount: f.amount } : {}), payment_type: f.payment_type ?? "", payment_method: f.payment_method ?? "",
-          collection_date: f.collection_date ?? "",
         });
         setUncertain(f.uncertain ?? []);
         toast.success("Details read — please check every field and enter the Book No.");
@@ -150,9 +149,9 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
           <table className="w-full min-w-[60rem] text-sm">
             <thead className="bg-muted text-left text-muted-foreground">
               <tr className="[&>th]:px-3 [&>th]:py-2">
-                <th>Serial No.</th><th>Collected By</th><th>Book No.</th><th>{sortBtn("receipt_no", "Receipt No.")}</th><th>Receipt Date</th>
+                <th>Serial No.</th><th>Collected By</th><th>Book No.</th><th>{sortBtn("receipt_no", "Receipt No.")}</th><th>{sortBtn("receipt_date", "Receipt Date")}</th>
                 <th>{sortBtn("donor_name", "Name of the Donor")}</th><th className="text-right">{sortBtn("amount", "Amount")}</th><th>Type of Payment</th>
-                <th>Cash/Cheque/UPI</th><th>{sortBtn("collection_date", "Date of Collection")}</th><th />
+                <th>Cash/Cheque/UPI</th><th />
               </tr>
             </thead>
             <tbody>
@@ -160,7 +159,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
                 <tr key={r.id} className="border-t border-border text-foreground [&>td]:px-3 [&>td]:py-2">
                   <td>{i + 1}</td><td>{r.collected_by}</td><td>{r.book_no}</td><td>{r.receipt_no}</td><td>{fmtDate(r.receipt_date)}</td>
                   <td>{r.donor_name}</td><td className="text-right font-semibold">{inr(Number(r.amount))}</td><td>{r.payment_type}</td>
-                  <td>{r.payment_method}</td><td>{fmtDate(r.collection_date)}</td>
+                  <td>{r.payment_method}</td>
                   <td><Button size="sm" variant="ghost" aria-label="Edit receipt" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="h-4 w-4" /></Button></td>
                 </tr>
               ))}
@@ -198,7 +197,7 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
   const [f, setF] = useState({
     collected_by: initial.collected_by ?? "", book_no: initial.book_no ?? "", receipt_no: initial.receipt_no ?? "",
     receipt_date: initial.receipt_date ?? "", donor_name: initial.donor_name ?? "", amount: initial.amount != null ? String(initial.amount) : "",
-    payment_type: initial.payment_type ?? "", payment_method: initial.payment_method ?? "", collection_date: initial.collection_date ?? "",
+    payment_type: initial.payment_type ?? "", payment_method: initial.payment_method ?? "",
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -216,7 +215,7 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
     const dup = rows.find((r) => r.book_no === v.book_no && r.receipt_no === v.receipt_no && r.id !== initial.id);
     if (dup) return setError(`Receipt No. ${v.receipt_no} is already recorded in Book No. ${v.book_no}.`);
     setSaving(true);
-    const row = { ...v, amount };
+    const row = { ...v, amount, collection_date: v.receipt_date };
     const { error: err } = initial.id
       ? await supabase.from("offline_donations").update(row).eq("id", initial.id)
       : await supabase.from("offline_donations").insert(row);
@@ -249,7 +248,6 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
         </select>
       ))}
       {field("receipt_date", "Receipt Date", <Input className={flag("receipt_date")} type="date" value={f.receipt_date} onChange={set("receipt_date")} required />)}
-      {field("collection_date", "Date of Collection", <Input className={flag("collection_date")} type="date" value={f.collection_date} onChange={set("collection_date")} required />)}
       {scanned && <p className="text-xs text-muted-foreground sm:col-span-2">Highlighted fields were missing or unclear in the photo. Book No. must always be entered by hand.</p>}
       {error && <p className="text-sm text-destructive sm:col-span-2">{error}</p>}
       <div className="flex justify-end gap-2 sm:col-span-2">
