@@ -112,6 +112,7 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
     const { error } = await supabase.from("offline_donations").upsert(rows.slice(i, i + 500) as never, { onConflict: "book_no,receipt_no" });
     if (error) throw new Error("Could not save the rows. Please try again.");
   }
+  if (createdBook && autoBook) skipped.unshift(`Rows without Book Detail were added to a new book: ${autoBook}`);
   return { kind: "Offline receipts", added: rows.length - updated, updated, skipped };
 }
 
