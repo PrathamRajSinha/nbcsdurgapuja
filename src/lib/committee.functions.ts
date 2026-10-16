@@ -73,10 +73,14 @@ export const scanReceipt = createServerFn({ method: "POST" })
           },
         },
       }),
-    });
-    if (res.status === 429) return { ok: false, error: "Too many scans right now — try again in a moment." };
-    if (res.status === 402) return { ok: false, error: "Scanning credits have run out." };
-    if (!res.ok || !res.body) return { ok: false, error: "Could not read the photo. Please fill the form manually." };
+      });
+    } catch {
+      clearTimeout(timer);
+      return { ok: false, error: "Reading took too long. Please fill the form manually." };
+    }
+    if (res.status === 429) { clearTimeout(timer); return { ok: false, error: "Too many scans right now — try again in a moment." }; }
+    if (res.status === 402) { clearTimeout(timer); return { ok: false, error: "Scanning credits have run out." }; }
+    if (!res.ok || !res.body) { clearTimeout(timer); return { ok: false, error: "Could not read the photo. Please fill the form manually." }; }
 
     try {
       let text = "";
