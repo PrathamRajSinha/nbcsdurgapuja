@@ -40,7 +40,12 @@ export const scanReceipt = createServerFn({ method: "POST" })
       upi_transaction_id: { type: ["string", "null"], description: "UPI transaction / reference ID printed on the receipt (e.g. UPI/Ref No., txn ID). Null when absent." },
       uncertain: { type: "array", items: { type: "string" } },
     };
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 55_000);
+    let res: Response;
+    try {
+      res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+      signal: ctrl.signal,
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Lovable-API-Key": key, "X-Lovable-AIG-SDK": "fetch", "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -68,10 +73,14 @@ export const scanReceipt = createServerFn({ method: "POST" })
           },
         },
       }),
-    });
-    if (res.status === 429) return { ok: false, error: "Too many scans right now — try again in a moment." };
-    if (res.status === 402) return { ok: false, error: "Scanning credits have run out." };
-    if (!res.ok || !res.body) return { ok: false, error: "Could not read the photo. Please fill the form manually." };
+      });
+    } catch {
+      clearTimeout(timer);
+      return { ok: false, error: "Reading took too long. Please fill the form manually." };
+    }
+    if (res.status === 429) { clearTimeout(timer); return { ok: false, error: "Too many scans right now — try again in a moment." }; }
+    if (res.status === 402) { clearTimeout(timer); return { ok: false, error: "Scanning credits have run out." }; }
+    if (!res.ok || !res.body) { clearTimeout(timer); return { ok: false, error: "Could not read the photo. Please fill the form manually." }; }
 
     try {
       let text = "";
@@ -79,6 +88,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
       const reader = res.body.getReader();
       const dec = new TextDecoder();
       for (;;) {
+        if (ctrl.signal.aborted) throw new Error("timeout");
         const { done, value } = await reader.read();
         if (done) break;
         buf += dec.decode(value, { stream: true });
@@ -95,6 +105,8 @@ export const scanReceipt = createServerFn({ method: "POST" })
         }
       }
       const raw = JSON.parse(text || "{}") as { [k: string]: unknown; amount?: unknown; payment_method?: unknown; payment_type?: unknown; upi_transaction_id?: unknown; uncertain?: unknown; collected_by?: unknown; receipt_no?: unknown; receipt_date?: unknown; donor_name?: unknown };
+      if (!text) throw new Error("empty");
+      clearTimeout(timer);
       const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
       const date = (v: unknown) => (isoDate.safeParse(v).success ? (v as string) : undefined);
       const amount = typeof raw.amount === "number" && raw.amount > 0 && raw.amount < 1e8 ? raw.amount : undefined;
@@ -115,6 +127,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
         },
       };
     } catch {
+      clearTimeout(timer);
       return { ok: false, error: "Could not read the photo. Please fill the form manually." };
     }
   });
