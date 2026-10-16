@@ -49,7 +49,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
         store: false,
         reasoning: { effort: "low" },
         instructions:
-          "You read photographs of handwritten or printed Indian donation receipt-book entries. Extract only what is legible; use null when unsure or absent. Never return a book number. Dates as YYYY-MM-DD (receipts are usually DD/MM/YYYY). Amount as a plain number in rupees. List unsure field names in uncertain.",
+          "You read photographs of handwritten or printed Indian donation receipt-book entries. Extract only what is legible; use null when unsure or absent. Never return a book number. Dates as YYYY-MM-DD (receipts are usually DD/MM/YYYY). Amount as a plain number in rupees. If the receipt shows a UPI transaction or reference ID, read it exactly. List unsure field names in uncertain.",
         input: [
           {
             role: "user",
@@ -94,7 +94,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
           } catch { /* ignore partial */ }
         }
       }
-      const raw = JSON.parse(text || "{}") as { [k: string]: unknown; amount?: unknown; payment_method?: unknown; payment_type?: unknown; uncertain?: unknown; collected_by?: unknown; receipt_no?: unknown; receipt_date?: unknown; donor_name?: unknown };
+      const raw = JSON.parse(text || "{}") as { [k: string]: unknown; amount?: unknown; payment_method?: unknown; payment_type?: unknown; upi_transaction_id?: unknown; uncertain?: unknown; collected_by?: unknown; receipt_no?: unknown; receipt_date?: unknown; donor_name?: unknown };
       const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
       const date = (v: unknown) => (isoDate.safeParse(v).success ? (v as string) : undefined);
       const amount = typeof raw.amount === "number" && raw.amount > 0 && raw.amount < 1e8 ? raw.amount : undefined;
