@@ -93,10 +93,10 @@ function Login() {
   );
 }
 
-const TABS = ["Overview", "Offline Donations", "Website Donations", "Memberships"] as const;
+const TABS = ["Offline Donations", "Website Donations", "Memberships"] as const;
 
 function Committee() {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
+  const [tab, setTab] = useState<(typeof TABS)[number]>("Offline Donations");
   const [web, setWeb] = useState<Donation[] | null>(null);
   const [off, setOff] = useState<Offline[] | null>(null);
   const loadWeb = async () => { const { data } = await supabase.from("donations").select("*").order("created_at", { ascending: false }); setWeb((data as Donation[]) ?? []); };
@@ -106,47 +106,18 @@ function Committee() {
 
   return (
     <div className="space-y-6">
-      <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Committee sections">
-        {TABS.map((t) => <Button key={t} size="sm" variant={tab === t ? "default" : "outline"} className="shrink-0" onClick={() => setTab(t)}>{t}</Button>)}
+      <nav className="grid grid-cols-2 gap-2 sm:flex" aria-label="Committee sections">
+        {TABS.map((t) => <Button key={t} size="sm" variant={tab === t ? "default" : "outline"} className="h-auto min-h-11 whitespace-normal px-2 py-2 sm:min-h-9 sm:shrink-0 sm:px-3" onClick={() => setTab(t)}>{t}</Button>)}
       </nav>
       {web === null || off === null ? <p>Loading…</p> : (
         <>
-          {tab === "Overview" && <Overview web={web} off={off} reload={reload} />}
+          
           {tab === "Website Donations" && <Dashboard rows={web} setRows={setWeb} />}
           {tab === "Offline Donations" && <OfflineSection rows={off} reload={loadOff} />}
           {tab === "Memberships" && <Memberships off={off} />}
+          <CsvImport onDone={reload} />
         </>
       )}
-    </div>
-  );
-}
-
-function Overview({ web, off, reload }: { web: Donation[]; off: Offline[]; reload: () => Promise<void> }) {
-  const t = totals(off);
-  const verified = web.filter((r) => r.payment_status === "VERIFIED");
-  const books = [...new Set(off.map((r) => r.book_no))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  return (
-    <div className="space-y-6">
-      <section className="space-y-3"><h2 className="font-display text-2xl text-foreground">Receipt books (offline)</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-          <Stat label="Total offline collections" value={inr(t.total)} /><Stat label="Cash" value={inr(t.cash)} />
-          <Stat label="UPI" value={inr(t.upi)} /><Stat label="Cheque" value={inr(t.cheque)} />
-          <Stat label="Receipts recorded" value={String(t.count)} /><Stat label="Receipt books" value={String(t.books)} />
-        </div>
-        {books.length > 0 && (
-          <div className="overflow-x-auto rounded-xl border border-border bg-card"><table className="w-full text-sm">
-            <thead className="bg-muted text-left text-muted-foreground"><tr className="[&>th]:px-3 [&>th]:py-2"><th>Book No.</th><th>Receipts</th><th className="text-right">Total</th></tr></thead>
-            <tbody>{books.map((b) => { const bt = totals(off.filter((r) => r.book_no === b)); return (
-              <tr key={b} className="border-t border-border text-foreground [&>td]:px-3 [&>td]:py-2"><td>{b}</td><td>{bt.count}</td><td className="text-right">{inr(bt.total)}</td></tr>); })}</tbody>
-          </table></div>
-        )}</section>
-      <section className="space-y-3"><h2 className="font-display text-2xl text-foreground">Website (online)</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Stat label="Verified website donations" value={inr(verified.reduce((n, r) => n + r.amount, 0))} />
-          <Stat label="Verified entries" value={String(verified.length)} />
-          <Stat label="Pending verification" value={String(web.length - verified.length)} />
-        </div></section>
-      <CsvImport onDone={reload} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, Download, Pencil, Plus, Search } from "lucide-react";
+import { Camera, Download, LoaderCircle, Pencil, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -73,13 +73,14 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
   );
 
   async function onPhoto(file: File | undefined) {
-    if (!file) return;
-    const dataUrl = await shrink(file);
-    setScanImage(dataUrl);
-    setUncertain([]);
-    setEditing({ book_no: "" });
+    if (!file || scanning) return;
     setScanning(true);
+    setEditing(null);
+    setScanImage(null);
+    setUncertain([]);
     try {
+      const dataUrl = await shrink(file);
+      setScanImage(dataUrl);
       const res = await scan({ data: { image: dataUrl } });
       if (res.ok) {
         const f = res.fields;
@@ -89,25 +90,33 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
         });
         setUncertain(f.uncertain ?? []);
         toast.success("Details read — please check every field and enter the Book No.");
-      } else toast.error(res.error);
-    } catch { toast.error("Could not read the photo. Please fill the form manually."); }
-    setScanning(false);
+      } else {
+        toast.error(res.error);
+        setEditing({ book_no: "" });
+      }
+    } catch {
+      toast.error("Could not read the photo. Please fill the form manually.");
+      setEditing({ book_no: "" });
+    } finally {
+      setScanning(false);
+    }
   }
 
   const bookSlug = book === "all" ? "all" : `book-${book.replace(/[^a-z0-9]+/gi, "-")}`;
   const methodSlug = method === "all" ? "" : `-${method.toLowerCase()}`;
 
   return (
-    <div className="space-y-5">
+    <div className="min-w-0 space-y-5">
+      <h1 className="font-display text-3xl text-foreground">Offline donations</h1>
       <div className="grid gap-3 sm:grid-cols-2">
-        <Button size="lg" onClick={() => { setScanImage(null); setUncertain([]); setEditing({ book_no: book === "all" ? "" : book }); }}><Plus className="mr-2 h-4 w-4" />Add Offline Donation</Button>
-        <Button size="lg" variant="outline" onClick={() => fileRef.current?.click()}><Camera className="mr-2 h-4 w-4" />Scan Receipt / Upload Photo</Button>
+        <Button size="lg" className="h-auto min-h-12 whitespace-normal py-3" disabled={scanning} onClick={() => { setScanImage(null); setUncertain([]); setEditing({ book_no: book === "all" ? "" : book }); }}><Plus className="mr-2 h-4 w-4" />Add Offline Donation</Button>
+        <Button size="lg" variant="outline" className="h-auto min-h-12 whitespace-normal py-3" disabled={scanning} onClick={() => fileRef.current?.click()}><Camera className="mr-2 h-4 w-4" />Scan Receipt / Upload Photo</Button>
         <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { onPhoto(e.target.files?.[0]); e.target.value = ""; }} />
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2 overflow-x-auto pb-2">
         {["all", ...books].map((b) => (
-          <Button key={b} size="sm" variant={book === b ? "default" : "outline"} onClick={() => setBook(b)}>
+          <Button key={b} className="shrink-0" size="sm" variant={book === b ? "default" : "outline"} onClick={() => setBook(b)}>
             {b === "all" ? "All Offline Donations" : `Book No. ${b}`}
           </Button>
         ))}
@@ -122,7 +131,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[14rem] flex-1">
+        <div className="relative min-w-0 basis-full sm:basis-auto sm:flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input className="pl-9" placeholder="Search donor, receipt, book, collector…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
@@ -145,7 +154,26 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
           {inBook.length === 0 ? (book === "all" ? "No offline receipts recorded yet." : `No receipts in Book No. ${book} yet.`) : "No receipts match your search."}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+        <div>
+          <div className="mb-3 flex items-center gap-2 md:hidden">
+            <select aria-label="Sort receipts" className="h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-sm" value={sort.key} onChange={(e) => setSort({ ...sort, key: e.target.value as SortKey })}>
+              <option value="receipt_no">Receipt number</option><option value="receipt_date">Receipt date</option><option value="donor_name">Donor name</option><option value="amount">Amount</option>
+            </select>
+            <Button variant="outline" onClick={() => setSort({ ...sort, dir: sort.dir === 1 ? -1 : 1 })} aria-label="Reverse sort order">{sort.dir === 1 ? "↑" : "↓"}</Button>
+          </div>
+          <div className="space-y-3 md:hidden">
+            {shown.map((r) => <article key={r.id} className="rounded-lg border border-border bg-card p-4 text-sm">
+              <div className="flex items-start justify-between gap-3"><strong className="min-w-0 break-words text-foreground">{r.donor_name}</strong><span className="shrink-0 font-semibold text-foreground">{inr(Number(r.amount))}</span></div>
+              <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-foreground">
+                <div><dt className="text-xs text-muted-foreground">Book / Receipt</dt><dd className="break-words">{r.book_no} / {r.receipt_no}</dd></div>
+                <div><dt className="text-xs text-muted-foreground">Receipt date</dt><dd>{fmtDate(r.receipt_date)}</dd></div>
+                <div><dt className="text-xs text-muted-foreground">Collected by</dt><dd className="break-words">{r.collected_by}</dd></div>
+                <div><dt className="text-xs text-muted-foreground">Payment</dt><dd className="break-words">{r.payment_type} · {r.payment_method}</dd></div>
+              </dl>
+              <Button className="mt-3 min-h-11" size="sm" variant="outline" onClick={() => { setScanImage(null); setUncertain([]); setEditing(r); }}><Pencil className="mr-2 h-4 w-4" />Edit receipt</Button>
+            </article>)}
+          </div>
+          <div className="hidden overflow-x-auto rounded-lg border border-border bg-card md:block">
           <table className="w-full min-w-[60rem] text-sm">
             <thead className="bg-muted text-left text-muted-foreground">
               <tr className="[&>th]:px-3 [&>th]:py-2">
@@ -165,19 +193,25 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
-      <Dialog open={editing !== null} onOpenChange={(o) => { if (!o) setEditing(null); }}>
-        <DialogContent className="max-h-[92svh] max-w-3xl overflow-y-auto">
-          <DialogHeader><DialogTitle>{editing?.id ? "Edit receipt" : scanImage ? "Check scanned receipt" : "Add offline donation"}</DialogTitle></DialogHeader>
-          {editing && (
+      <Dialog open={scanning || editing !== null} onOpenChange={(o) => { if (!o && !scanning) setEditing(null); }}>
+        <DialogContent className="max-h-[90svh] w-[calc(100%-1.5rem)] max-w-3xl overflow-y-auto p-4 sm:p-6">
+          <DialogHeader><DialogTitle>{scanning ? "Reading receipt" : editing?.id ? "Edit receipt" : scanImage ? "Check scanned receipt" : "Add offline donation"}</DialogTitle></DialogHeader>
+          {scanning ? (
+            <div role="status" aria-live="polite" className="flex min-h-48 flex-col items-center justify-center gap-4 py-8 text-center">
+              <LoaderCircle className="h-10 w-10 animate-spin text-primary" aria-hidden="true" />
+              <p className="font-semibold text-foreground">Reading your receipt…</p>
+              <p className="text-sm text-muted-foreground">Please wait. Your details will appear when the scan finishes.</p>
+            </div>
+          ) : editing && (
             <div className={scanImage ? "grid gap-4 md:grid-cols-[14rem_1fr]" : ""}>
               {scanImage && (
                 <div className="space-y-2">
-                  <img src={scanImage} alt="Receipt photo" className="w-full rounded-lg border border-border" />
+                  <img src={scanImage} alt="Receipt photo" className="max-h-40 w-full rounded-lg border border-border object-contain md:max-h-80" />
                   <Button size="sm" variant="outline" className="w-full" onClick={() => fileRef.current?.click()}>Retake / replace</Button>
-                  {scanning && <p className="text-sm text-muted-foreground">Reading the photo…</p>}
                 </div>
               )}
               <ReceiptForm key={JSON.stringify(editing)} initial={editing} rows={rows} uncertain={uncertain} scanned={!!scanImage} busy={scanning}
@@ -201,8 +235,13 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
-  const flag = (k: string) => (scanned && (!f[k as keyof typeof f] || uncertain.includes(k)) ? "ring-2 ring-destructive/50" : "");
+  const [reviewed, setReviewed] = useState<string[]>([]);
+  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => {
+    setF((current) => ({ ...current, [k]: e.target.value }));
+    setReviewed((current) => current.includes(k) ? current : [...current, k]);
+  };
+  const needsReview = (k: keyof typeof f) => scanned && (!f[k] || (uncertain.includes(k) && !reviewed.includes(k)));
+  const flag = (k: keyof typeof f) => needsReview(k) ? "border-destructive bg-destructive/5 ring-1 ring-destructive focus-visible:ring-destructive" : "";
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -226,12 +265,12 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
   }
 
   const field = (k: keyof typeof f, label: string, input: React.ReactNode) => (
-    <label className="grid gap-1 text-sm"><span className="font-medium text-foreground">{label} *</span>{input}</label>
+    <label className="grid min-w-0 gap-1 text-sm"><span className="font-medium text-foreground">{label} *</span>{input}{needsReview(k) && <span className="text-xs text-destructive">{k === "book_no" ? "Enter the book number" : "Missing or unclear — check this field"}</span>}</label>
   );
 
   return (
     <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
-      {field("book_no", "Book No.", <Input className={scanned ? "ring-2 ring-primary" : ""} value={f.book_no} onChange={set("book_no")} placeholder="e.g. 64" required autoFocus={scanned} />)}
+      {field("book_no", "Book No.", <Input className={flag("book_no")} value={f.book_no} onChange={set("book_no")} placeholder="e.g. 64" required autoFocus={scanned} />)}
       {field("receipt_no", "Receipt No.", <Input className={flag("receipt_no")} value={f.receipt_no} onChange={set("receipt_no")} placeholder="As printed" required />)}
       {field("collected_by", "Collected By", <Input className={flag("collected_by")} value={f.collected_by} onChange={set("collected_by")} required />)}
       {field("donor_name", "Name of the Donor", <Input className={flag("donor_name")} value={f.donor_name} onChange={set("donor_name")} required />)}
@@ -248,9 +287,9 @@ function ReceiptForm({ initial, rows, uncertain, scanned, busy, onCancel, onSave
         </select>
       ))}
       {field("receipt_date", "Receipt Date", <Input className={flag("receipt_date")} type="date" value={f.receipt_date} onChange={set("receipt_date")} required />)}
-      {scanned && <p className="text-xs text-muted-foreground sm:col-span-2">Highlighted fields were missing or unclear in the photo. Book No. must always be entered by hand.</p>}
+      {scanned && <p className="text-xs text-muted-foreground sm:col-span-2">Red fields were missing or unclear in the photo. Book No. must always be entered by hand.</p>}
       {error && <p className="text-sm text-destructive sm:col-span-2">{error}</p>}
-      <div className="flex justify-end gap-2 sm:col-span-2">
+      <div className="flex flex-col-reverse gap-2 sm:col-span-2 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
         <Button type="submit" disabled={saving || busy}>{saving ? "Saving…" : initial.id ? "Save changes" : scanned ? "Confirm & Save Donation" : "Save Donation"}</Button>
       </div>
@@ -272,6 +311,9 @@ async function shrink(file: File): Promise<string> {
   const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
   c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
-  c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+  const context = c.getContext("2d");
+  if (!context) throw new Error("Could not prepare receipt photo");
+  context.drawImage(img, 0, 0, c.width, c.height);
+  img.close();
   return c.toDataURL("image/jpeg", 0.85);
 }

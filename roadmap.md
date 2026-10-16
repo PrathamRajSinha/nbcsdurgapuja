@@ -16,3 +16,9 @@
 - [x] Drop the www prefix from the site's own address everywhere.
 # Committee ordering
 - [x] Show Offline Donations before Website Donations in tabs and overview.
+
+# Committee receipt workflow
+- [x] Remove Overview and make Offline Donations the default, retaining CSV upload.
+- [x] Improve phone receipt browsing and forms.
+- [x] Show scanning progress before the form and mark unclear fields red.
+- [x] Verify the committee workflow and scan states.
