@@ -11,12 +11,12 @@ const OFFLINE_COLS: Record<string, (h: string) => boolean> = {
   collected_by: (h) => h.includes("collected"),
   book_no: (h) => h.startsWith("book"),
   receipt_no: (h) => h.startsWith("receiptno") || h === "receipt" || h === "receiptnumber",
-  receipt_date: (h) => h === "receiptdate",
+  receipt_date: (h) => h.includes("date") && !h.includes("collection"),
   donor_name: (h) => h.includes("donor") || h === "name",
   amount: (h) => h.startsWith("amount"),
   payment_type: (h) => h.includes("typeofpayment") || h === "paymenttype" || h === "type",
   payment_method: (h) => h.includes("cash/") || h.includes("method") || h === "mode" || h.includes("modeofpayment"),
-  collection_date: (h) => h.includes("collection") && h.includes("date"),
+  collection_date: (h) => h.includes("collection"),
 };
 
 /** Upload a CSV: offline receipt sheets go into offline donations (matched by Book No. + Receipt No.);
@@ -67,7 +67,7 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
 
 async function importOffline(header: string[], body: string[][]): Promise<Result> {
   const idx = Object.fromEntries(Object.entries(OFFLINE_COLS).map(([k, test]) => [k, header.findIndex(test)])) as Record<string, number>;
-  const missing = Object.entries(idx).filter(([, i]) => i < 0).map(([k]) => k.replace("_", " "));
+  const missing = Object.entries(idx).filter(([k, i]) => i < 0 && k !== "receipt_date" && k !== "collection_date").map(([k]) => k.replace("_", " "));
   if (missing.length) throw new Error(`Missing columns: ${missing.join(", ")}`);
   const skipped: string[] = [];
   const map = new Map<string, { book_no: string; receipt_no: string; [k: string]: unknown }>();
@@ -78,15 +78,15 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
     if (!book && !receipt && !get("donor_name")) return;
     const amount = Number(get("amount").replace(/[₹,\s]|rs\.?/gi, ""));
     const method = normMethod(get("payment_method"));
-    const rd = parseDate(get("receipt_date")), cd = parseDate(get("collection_date"));
+    const rd = parseDate(get("receipt_date") || get("collection_date"));
     const problems = [
       !book && "Book No.", !receipt && "Receipt No.", !get("collected_by") && "Collected By", !get("donor_name") && "donor name",
-      !(amount > 0) && "amount", !get("payment_type") && "type of payment", !method && "Cash/Cheque/UPI", !rd && "receipt date", !cd && "collection date",
+      !(amount > 0) && "amount", !get("payment_type") && "type of payment", !method && "Cash/Cheque/UPI", !rd && "date",
     ].filter(Boolean);
     if (problems.length) return void skipped.push(`${line}: missing or invalid ${problems.join(", ")}`);
     const key = `${book}|${receipt}`;
     if (map.has(key)) skipped.push(`${line}: Book ${book} receipt ${receipt} appears twice — kept the last one`);
-    map.set(key, { collected_by: get("collected_by"), book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: get("donor_name"), amount, payment_type: get("payment_type"), payment_method: method, collection_date: cd });
+    map.set(key, { collected_by: get("collected_by"), book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: get("donor_name"), amount, payment_type: get("payment_type"), payment_method: method, collection_date: rd });
   });
   const rows = [...map.values()];
   const { data: existing } = await supabase.from("offline_donations").select("book_no, receipt_no");

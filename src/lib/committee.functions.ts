@@ -14,7 +14,6 @@ export type ScannedReceipt = {
   amount?: number | undefined;
   payment_type?: string | undefined;
   payment_method?: "Cash" | "Cheque" | "UPI" | undefined;
-  collection_date?: string | undefined;
   uncertain?: string[] | undefined;
 };
 
@@ -37,7 +36,6 @@ export const scanReceipt = createServerFn({ method: "POST" })
       amount: { type: ["number", "null"] },
       payment_type: { type: ["string", "null"], enum: ["Donation", "Membership", null] },
       payment_method: { type: ["string", "null"], enum: ["Cash", "Cheque", "UPI", null] },
-      collection_date: { type: ["string", "null"], description: "YYYY-MM-DD" },
       uncertain: { type: "array", items: { type: "string" } },
     };
     const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
@@ -94,7 +92,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
           } catch { /* ignore partial */ }
         }
       }
-      const raw = JSON.parse(text || "{}") as { [k: string]: unknown; amount?: unknown; payment_method?: unknown; payment_type?: unknown; uncertain?: unknown; collected_by?: unknown; receipt_no?: unknown; receipt_date?: unknown; donor_name?: unknown; collection_date?: unknown };
+      const raw = JSON.parse(text || "{}") as { [k: string]: unknown; amount?: unknown; payment_method?: unknown; payment_type?: unknown; uncertain?: unknown; collected_by?: unknown; receipt_no?: unknown; receipt_date?: unknown; donor_name?: unknown };
       const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
       const date = (v: unknown) => (isoDate.safeParse(v).success ? (v as string) : undefined);
       const amount = typeof raw.amount === "number" && raw.amount > 0 && raw.amount < 1e8 ? raw.amount : undefined;
@@ -110,7 +108,6 @@ export const scanReceipt = createServerFn({ method: "POST" })
           amount,
           payment_type: type,
           payment_method: method,
-          collection_date: date(raw.collection_date),
           uncertain: Array.isArray(raw.uncertain) ? raw.uncertain.filter((x): x is string => typeof x === "string") : [],
         },
       };

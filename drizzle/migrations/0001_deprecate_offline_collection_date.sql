@@ -1,0 +1,1 @@
+COMMENT ON COLUMN public.offline_donations.collection_date IS 'DEPRECATED: merged with receipt_date — the app writes the receipt date into this column; do not surface it in the UI.';
