@@ -7,15 +7,15 @@ const scanInput = z.object({
 });
 
 export type ScannedReceipt = {
-  collected_by?: string;
-  receipt_no?: string;
-  receipt_date?: string;
-  donor_name?: string;
-  amount?: number;
-  payment_type?: string;
-  payment_method?: "Cash" | "Cheque" | "UPI";
-  collection_date?: string;
-  uncertain?: string[];
+  collected_by?: string | undefined;
+  receipt_no?: string | undefined;
+  receipt_date?: string | undefined;
+  donor_name?: string | undefined;
+  amount?: number | undefined;
+  payment_type?: string | undefined;
+  payment_method?: "Cash" | "Cheque" | "UPI" | undefined;
+  collection_date?: string | undefined;
+  uncertain?: string[] | undefined;
 };
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -94,7 +94,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
           } catch { /* ignore partial */ }
         }
       }
-      const raw = JSON.parse(text || "{}") as Record<string, unknown>;
+      const raw = JSON.parse(text || "{}") as { [k: string]: unknown; amount?: unknown; payment_method?: unknown; payment_type?: unknown; uncertain?: unknown; collected_by?: unknown; receipt_no?: unknown; receipt_date?: unknown; donor_name?: unknown; collection_date?: unknown };
       const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
       const date = (v: unknown) => (isoDate.safeParse(v).success ? (v as string) : undefined);
       const amount = typeof raw.amount === "number" && raw.amount > 0 && raw.amount < 1e8 ? raw.amount : undefined;

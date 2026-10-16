@@ -46,11 +46,11 @@ export function parseDate(v: string): string | null {
   const s = v.trim();
   let y: number, m: number, d: number;
   let r = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  if (r) { y = +r[1]; m = +r[2]; d = +r[3]; }
+  if (r) { y = +r[1]!; m = +r[2]!; d = +r[3]!; }
   else {
     r = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/);
     if (!r) return null;
-    d = +r[1]; m = +r[2]; y = +r[3]; if (y < 100) y += 2000;
+    d = +r[1]!; m = +r[2]!; y = +r[3]!; if (y < 100) y += 2000;
   }
   const dt = new Date(Date.UTC(y, m - 1, d));
   if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) return null;

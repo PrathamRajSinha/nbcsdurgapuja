@@ -85,7 +85,7 @@ export function OfflineSection({ rows, reload }: { rows: Offline[]; reload: () =
         const f = res.fields;
         setEditing({
           book_no: "", collected_by: f.collected_by ?? "", receipt_no: f.receipt_no ?? "", receipt_date: f.receipt_date ?? "",
-          donor_name: f.donor_name ?? "", amount: f.amount, payment_type: f.payment_type ?? "", payment_method: f.payment_method ?? "",
+          donor_name: f.donor_name ?? "", ...(f.amount != null ? { amount: f.amount } : {}), payment_type: f.payment_type ?? "", payment_method: f.payment_method ?? "",
           collection_date: f.collection_date ?? "",
         });
         setUncertain(f.uncertain ?? []);

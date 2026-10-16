@@ -33,7 +33,7 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
       const rows = parseCsv(await file.text());
       const hi = rows.findIndex((r) => r.some((c) => /book/i.test(c)) || r.some((c) => /reference id/i.test(c)));
       if (hi < 0) throw new Error("Couldn't find a header row with Book No. or Reference ID.");
-      const header = rows[hi].map(norm);
+      const header = rows[hi]!.map(norm);
       const body = rows.slice(hi + 1);
       setResult(header.includes("referenceid") ? await importWebsite(header, body) : await importOffline(header, body));
       await onDone();
@@ -70,9 +70,9 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
   const missing = Object.entries(idx).filter(([, i]) => i < 0).map(([k]) => k.replace("_", " "));
   if (missing.length) throw new Error(`Missing columns: ${missing.join(", ")}`);
   const skipped: string[] = [];
-  const map = new Map<string, Record<string, unknown>>();
+  const map = new Map<string, { book_no: string; receipt_no: string; [k: string]: unknown }>();
   body.forEach((r, n) => {
-    const get = (k: string) => (r[idx[k]] ?? "").trim();
+    const get = (k: string) => (r[idx[k] ?? -1] ?? "").trim();
     const line = `Row ${n + 2}`;
     const book = get("book_no"), receipt = get("receipt_no");
     if (!book && !receipt && !get("donor_name")) return;
