@@ -8,6 +8,13 @@
       "when": 1792125237090,
       "tag": "0000_offline_donations",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792126105106,
+      "tag": "0001_deprecate_offline_collection_date",
+      "breakpoints": true
     }
   ]
 }
