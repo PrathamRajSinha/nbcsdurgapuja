@@ -14,3 +14,5 @@
 - [x] Move contact details to the end, under the closing line.
 - [x] Show real account usernames beside Facebook, Instagram and Website.
 - [x] Drop the www prefix from the site's own address everywhere.
+# Committee ordering
+- [x] Show Offline Donations before Website Donations in tabs and overview.
