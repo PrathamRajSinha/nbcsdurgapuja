@@ -33,12 +33,17 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
     try {
       const rows = parseCsv(await file.text());
       const hi = rows.findIndex((r) => r.some((c) => /book/i.test(c)) || r.some((c) => /reference id/i.test(c)));
-      if (hi < 0) throw new Error("Couldn't find a header row with Book Detail or Reference ID.");
-      const headerRow = rows[hi];
-      if (!headerRow) throw new Error("Could not read the CSV header.");
-      const header = headerRow.map(norm);
-      const body = rows.slice(hi + 1);
-      setResult(header.includes("referenceid") ? await importWebsite(header, body) : await importOffline(header, body));
+      if (hi < 0) {
+        // No header row: assume the standard receipt-book column order and import everything as offline receipts.
+        const header = ["collectedby", "bookdetail", "receiptno", "date", "donorname", "amount", "typeofpayment", "cash/cheque/upi", "transactionid"];
+        setResult(await importOffline(header, rows));
+      } else {
+        const headerRow = rows[hi];
+        if (!headerRow) throw new Error("Could not read the CSV header.");
+        const header = headerRow.map(norm);
+        const body = rows.slice(hi + 1);
+        setResult(header.includes("referenceid") ? await importWebsite(header, body) : await importOffline(header, body));
+      }
       await onDone();
     } catch (e) {
       setResult({ kind: "error", added: 0, updated: 0, skipped: [(e as Error).message] });
