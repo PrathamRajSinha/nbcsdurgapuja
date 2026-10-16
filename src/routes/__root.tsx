@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -123,12 +124,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const isCommitteePage = useRouterState({
+    select: (state) => state.location.pathname.replace(/\/$/, "") === "/committee-only",
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
       <SmoothScroll />
-      <IntroReveal />
-      <PageLoader />
+      {!isCommitteePage && <IntroReveal />}
+      {!isCommitteePage && <PageLoader />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>

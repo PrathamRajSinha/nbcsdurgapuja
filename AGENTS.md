@@ -15,6 +15,7 @@
 - Use one root-level Lenis instance for site-wide smooth scrolling; this keeps scroll-linked sections synchronized and avoids competing controllers.
 - Use the paired dhunuchi-dancer artwork for repeating section borders and tie its left-to-right motion to page scroll; this keeps decorative separators consistent and interactive.
 - Keep the route-transition cover mounted until above-the-fold images and fonts are decoded; this prevents unfinished pages appearing after the wipe.
+- Mount the festival intro and transition cover only outside `/committee-only`, and bypass the cover when navigating there; committee access must be immediate and free of festival animations.
 - Lock the document from intro loading through curtain dismissal and use a small-viewport-height mobile overlay; this prevents touch scrolling and browser-bar control jumps.
 - Keep scroll-reactive festival decoration in `festival-art.tsx`; this centralizes motion cleanup and reduced-motion handling.
 - Use the supplied DomeGallery for all gallery photos and a curated subset in the home accordion, both from the shared gallery catalogue; this preserves both experiences without overcrowding the home page.
