@@ -105,6 +105,8 @@ export const scanReceipt = createServerFn({ method: "POST" })
         }
       }
       const raw = JSON.parse(text || "{}") as { [k: string]: unknown; amount?: unknown; payment_method?: unknown; payment_type?: unknown; upi_transaction_id?: unknown; uncertain?: unknown; collected_by?: unknown; receipt_no?: unknown; receipt_date?: unknown; donor_name?: unknown };
+      if (!text) throw new Error("empty");
+      clearTimeout(timer);
       const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
       const date = (v: unknown) => (isoDate.safeParse(v).success ? (v as string) : undefined);
       const amount = typeof raw.amount === "number" && raw.amount > 0 && raw.amount < 1e8 ? raw.amount : undefined;
