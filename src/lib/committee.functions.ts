@@ -40,7 +40,12 @@ export const scanReceipt = createServerFn({ method: "POST" })
       upi_transaction_id: { type: ["string", "null"], description: "UPI transaction / reference ID printed on the receipt (e.g. UPI/Ref No., txn ID). Null when absent." },
       uncertain: { type: "array", items: { type: "string" } },
     };
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 55_000);
+    let res: Response;
+    try {
+      res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+      signal: ctrl.signal,
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Lovable-API-Key": key, "X-Lovable-AIG-SDK": "fetch", "Content-Type": "application/json" },
       body: JSON.stringify({
