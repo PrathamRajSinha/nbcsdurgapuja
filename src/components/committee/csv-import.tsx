@@ -78,6 +78,8 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
   const missing = Object.entries(idx).filter(([k, i]) => i < 0 && k !== "receipt_date" && k !== "collection_date" && k !== "upi_transaction_id").map(([k]) => k.replace("_", " "));
   if (missing.length) throw new Error(`Missing columns: ${missing.join(", ")}`);
   const skipped: string[] = [];
+  let autoBook: string | null = null;
+  let createdBook = false;
   const map = new Map<string, { book_no: string; receipt_no: string; [k: string]: unknown }>();
   body.forEach((r, n) => {
     const get = (k: string) => (r[idx[k] ?? -1] ?? "").trim();
