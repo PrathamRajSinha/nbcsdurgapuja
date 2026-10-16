@@ -56,7 +56,7 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-semibold text-foreground">Upload CSV</p>
-          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book Detail + Receipt No. are updated). Website-donation CSVs mark matching entries Verified.</p>
+          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book Detail + Receipt No. are updated). Rows without a Book Detail go into a new book automatically, and sheets without a header row are read in the standard column order. Website-donation CSVs mark matching entries Verified.</p>
         </div>
         <Button variant="outline" disabled={busy} onClick={() => ref.current?.click()}><Upload className="mr-2 h-4 w-4" />{busy ? "Importing…" : "Upload CSV"}</Button>
         <input ref={ref} type="file" accept=".csv,text/csv" className="hidden" onChange={(e) => { handle(e.target.files?.[0]); e.target.value = ""; }} />
