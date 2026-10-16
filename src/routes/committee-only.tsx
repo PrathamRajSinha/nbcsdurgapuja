@@ -93,7 +93,7 @@ function Login() {
   );
 }
 
-const TABS = ["Overview", "Website Donations", "Offline Donations", "Memberships"] as const;
+const TABS = ["Overview", "Offline Donations", "Website Donations", "Memberships"] as const;
 
 function Committee() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
@@ -127,12 +127,6 @@ function Overview({ web, off, reload }: { web: Donation[]; off: Offline[]; reloa
   const books = [...new Set(off.map((r) => r.book_no))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   return (
     <div className="space-y-6">
-      <section className="space-y-3"><h2 className="font-display text-2xl text-foreground">Website (online)</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Stat label="Verified website donations" value={inr(verified.reduce((n, r) => n + r.amount, 0))} />
-          <Stat label="Verified entries" value={String(verified.length)} />
-          <Stat label="Pending verification" value={String(web.length - verified.length)} />
-        </div></section>
       <section className="space-y-3"><h2 className="font-display text-2xl text-foreground">Receipt books (offline)</h2>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           <Stat label="Total offline collections" value={inr(t.total)} /><Stat label="Cash" value={inr(t.cash)} />
@@ -146,6 +140,12 @@ function Overview({ web, off, reload }: { web: Donation[]; off: Offline[]; reloa
               <tr key={b} className="border-t border-border text-foreground [&>td]:px-3 [&>td]:py-2"><td>{b}</td><td>{bt.count}</td><td className="text-right">{inr(bt.total)}</td></tr>); })}</tbody>
           </table></div>
         )}</section>
+      <section className="space-y-3"><h2 className="font-display text-2xl text-foreground">Website (online)</h2>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Stat label="Verified website donations" value={inr(verified.reduce((n, r) => n + r.amount, 0))} />
+          <Stat label="Verified entries" value={String(verified.length)} />
+          <Stat label="Pending verification" value={String(web.length - verified.length)} />
+        </div></section>
       <CsvImport onDone={reload} />
     </div>
   );
