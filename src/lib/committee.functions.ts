@@ -110,6 +110,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
           amount,
           payment_type: type,
           payment_method: method,
+          upi_transaction_id: str(raw.upi_transaction_id),
           uncertain: Array.isArray(raw.uncertain) ? raw.uncertain.filter((x): x is string => typeof x === "string") : [],
         },
       };
