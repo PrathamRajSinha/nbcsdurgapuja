@@ -127,6 +127,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
         },
       };
     } catch {
+      clearTimeout(timer);
       return { ok: false, error: "Could not read the photo. Please fill the form manually." };
     }
   });
