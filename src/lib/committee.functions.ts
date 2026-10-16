@@ -88,6 +88,7 @@ export const scanReceipt = createServerFn({ method: "POST" })
       const reader = res.body.getReader();
       const dec = new TextDecoder();
       for (;;) {
+        if (ctrl.signal.aborted) throw new Error("timeout");
         const { done, value } = await reader.read();
         if (done) break;
         buf += dec.decode(value, { stream: true });
