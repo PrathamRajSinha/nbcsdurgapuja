@@ -89,7 +89,7 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
     if (problems.length) return void skipped.push(`${line}: missing or invalid ${problems.join(", ")}`);
     const key = `${book}|${receipt}`;
     if (map.has(key)) skipped.push(`${line}: Book ${book} receipt ${receipt} appears twice — kept the last one`);
-    map.set(key, { collected_by: get("collected_by"), book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: get("donor_name"), amount, payment_type: get("payment_type"), payment_method: method, collection_date: rd, ...(idx.upi_transaction_id >= 0 ? { upi_transaction_id: get("upi_transaction_id") || null } : {}) });
+    map.set(key, { collected_by: get("collected_by"), book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: get("donor_name"), amount, payment_type: get("payment_type"), payment_method: method, collection_date: rd, ...((idx["upi_transaction_id"] ?? -1) >= 0 ? { upi_transaction_id: get("upi_transaction_id") || null } : {}) });
   });
   const rows = [...map.values()];
   const { data: existing } = await supabase.from("offline_donations").select("book_no, receipt_no");
