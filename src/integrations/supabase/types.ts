@@ -65,6 +65,57 @@ export type Database = {
         }
         Relationships: []
       }
+      offline_donations: {
+        Row: {
+          amount: number
+          book_no: string
+          collected_by: string
+          collection_date: string
+          created_at: string
+          created_by: string | null
+          donor_name: string
+          id: string
+          payment_method: string
+          payment_type: string
+          receipt_date: string
+          receipt_no: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          amount: number
+          book_no: string
+          collected_by: string
+          collection_date: string
+          created_at?: string
+          created_by?: string | null
+          donor_name: string
+          id?: string
+          payment_method: string
+          payment_type: string
+          receipt_date: string
+          receipt_no: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          amount?: number
+          book_no?: string
+          collected_by?: string
+          collection_date?: string
+          created_at?: string
+          created_by?: string | null
+          donor_name?: string
+          id?: string
+          payment_method?: string
+          payment_type?: string
+          receipt_date?: string
+          receipt_no?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
