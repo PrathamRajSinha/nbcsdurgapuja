@@ -56,7 +56,7 @@ export function CsvImport({ onDone }: { onDone: () => Promise<void> }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-semibold text-foreground">Upload CSV</p>
-          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book Detail + Receipt No. are updated). Rows without a Book Detail go into a new book automatically, and sheets without a header row are read in the standard column order. Website-donation CSVs mark matching entries Verified.</p>
+          <p className="text-sm text-muted-foreground">Receipt-book sheets are added to Offline Donations (existing Book Detail + Receipt No. are updated). Rows without a Book Detail go into a new book automatically, sheets without a header row are read in the standard column order, and any other missing detail is filled with a default (you can edit it later). Website-donation CSVs mark matching entries Verified.</p>
         </div>
         <Button variant="outline" disabled={busy} onClick={() => ref.current?.click()}><Upload className="mr-2 h-4 w-4" />{busy ? "Importing…" : "Upload CSV"}</Button>
         <input ref={ref} type="file" accept=".csv,text/csv" className="hidden" onChange={(e) => { handle(e.target.files?.[0]); e.target.value = ""; }} />
@@ -105,7 +105,7 @@ async function importOffline(header: string[], body: string[][]): Promise<Result
     if (filled.length) skipped.push(`${line}: saved with defaults for missing ${filled.join(", ")}`);
     const key = `${book}|${receipt}`;
     if (map.has(key)) skipped.push(`${line}: Book ${book} receipt ${receipt} appears twice — kept the last one`);
-    map.set(key, { collected_by: get("collected_by"), book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: get("donor_name"), amount, payment_type: get("payment_type"), payment_method: method, collection_date: rd, ...((idx["upi_transaction_id"] ?? -1) >= 0 ? { upi_transaction_id: get("upi_transaction_id") || null } : {}) });
+    map.set(key, { collected_by: collectedBy, book_no: book, receipt_no: receipt, receipt_date: rd, donor_name: donor, amount, payment_type: paymentType, payment_method: method, collection_date: rd, ...((idx["upi_transaction_id"] ?? -1) >= 0 ? { upi_transaction_id: get("upi_transaction_id") || null } : {}) });
   });
   const rows = [...map.values()];
   const { data: existing } = await supabase.from("offline_donations").select("book_no, receipt_no");
