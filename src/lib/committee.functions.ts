@@ -29,57 +29,72 @@ export const scanReceipt = createServerFn({ method: "POST" })
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) return { ok: false, error: "Receipt scanning is not configured." };
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const props = {
+      collected_by: { type: ["string", "null"] },
+      receipt_no: { type: ["string", "null"] },
+      receipt_date: { type: ["string", "null"], description: "YYYY-MM-DD" },
+      donor_name: { type: ["string", "null"] },
+      amount: { type: ["number", "null"] },
+      payment_type: { type: ["string", "null"], enum: ["Donation", "Membership", null] },
+      payment_method: { type: ["string", "null"], enum: ["Cash", "Cheque", "UPI", null] },
+      collection_date: { type: ["string", "null"], description: "YYYY-MM-DD" },
+      uncertain: { type: "array", items: { type: "string" } },
+    };
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
       method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${key}`, "Lovable-API-Key": key, "X-Lovable-AIG-SDK": "fetch", "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You read photographs of handwritten or printed Indian donation receipt-book entries. Extract only what is legible. Never guess. Never return a book number. Dates as YYYY-MM-DD (receipts are usually DD/MM/YYYY). Amount as a plain number in rupees.",
-          },
+        model: "openai/gpt-6-astra",
+        stream: true,
+        store: false,
+        reasoning: { effort: "low" },
+        instructions:
+          "You read photographs of handwritten or printed Indian donation receipt-book entries. Extract only what is legible; use null when unsure or absent. Never return a book number. Dates as YYYY-MM-DD (receipts are usually DD/MM/YYYY). Amount as a plain number in rupees. List unsure field names in uncertain.",
+        input: [
           {
             role: "user",
             content: [
-              { type: "text", text: "Extract the receipt fields." },
-              { type: "image_url", image_url: { url: data.image } },
+              { type: "input_text", text: "Extract the receipt fields as JSON." },
+              { type: "input_image", image_url: data.image },
             ],
           },
         ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "receipt",
-              parameters: {
-                type: "object",
-                properties: {
-                  collected_by: { type: "string" },
-                  receipt_no: { type: "string" },
-                  receipt_date: { type: "string" },
-                  donor_name: { type: "string" },
-                  amount: { type: "number" },
-                  payment_type: { type: "string", enum: ["Donation", "Membership"] },
-                  payment_method: { type: "string", enum: ["Cash", "Cheque", "UPI"] },
-                  collection_date: { type: "string" },
-                  uncertain: { type: "array", items: { type: "string" }, description: "Field names you are unsure about" },
-                },
-              },
-            },
+        text: {
+          format: {
+            type: "json_schema",
+            name: "receipt",
+            strict: true,
+            schema: { type: "object", properties: props, required: Object.keys(props), additionalProperties: false },
           },
-        ],
-        tool_choice: { type: "function", function: { name: "receipt" } },
+        },
       }),
     });
     if (res.status === 429) return { ok: false, error: "Too many scans right now — try again in a moment." };
     if (res.status === 402) return { ok: false, error: "Scanning credits have run out." };
-    if (!res.ok) return { ok: false, error: "Could not read the photo. Please fill the form manually." };
+    if (!res.ok || !res.body) return { ok: false, error: "Could not read the photo. Please fill the form manually." };
 
     try {
-      const json = (await res.json()) as { choices?: { message?: { tool_calls?: { function?: { arguments?: string } }[] } }[] };
-      const raw = JSON.parse(json.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments ?? "{}") as Record<string, unknown>;
+      let text = "";
+      let buf = "";
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith("data:")) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === "[DONE]") continue;
+          try {
+            const ev = JSON.parse(payload) as { type?: string; delta?: string };
+            if (ev.type === "response.output_text.delta" && ev.delta) text += ev.delta;
+          } catch { /* ignore partial */ }
+        }
+      }
+      const raw = JSON.parse(text || "{}") as Record<string, unknown>;
       const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
       const date = (v: unknown) => (isoDate.safeParse(v).success ? (v as string) : undefined);
       const amount = typeof raw.amount === "number" && raw.amount > 0 && raw.amount < 1e8 ? raw.amount : undefined;
