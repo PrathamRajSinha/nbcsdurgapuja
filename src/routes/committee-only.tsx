@@ -9,6 +9,7 @@ import { OfflineSection, Stat, totals, type Offline } from "@/components/committ
 import { CsvImport } from "@/components/committee/csv-import";
 import { inr } from "@/lib/committee-csv";
 import { membershipForm } from "@/lib/site-content";
+import { Toaster } from "@/components/ui/sonner";
 import logoAsset from "@/assets/logo.png.asset.json";
 
 export const Route = createFileRoute("/committee-only")({
@@ -50,6 +51,7 @@ function CommitteePage() {
 
   return (
     <div className="min-h-svh bg-background">
+      <Toaster position="top-center" />
       <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-3">
