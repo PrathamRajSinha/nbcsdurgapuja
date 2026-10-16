@@ -54,6 +54,7 @@ export function PageLoader() {
       if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
       const url = new URL(a.href, window.location.href);
       if (url.origin !== window.location.origin) return;
+      if (url.pathname.replace(/\/$/, "") === "/committee-only") return;
       if (url.pathname === window.location.pathname) return;
       e.preventDefault();
       if (covering.current) return;
