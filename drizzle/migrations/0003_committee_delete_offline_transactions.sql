@@ -1,0 +1,2 @@
+GRANT DELETE ON public.offline_donations TO authenticated;
+CREATE POLICY "Committee can delete offline donations" ON public.offline_donations FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'committee'));

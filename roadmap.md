@@ -18,6 +18,7 @@
 - [x] Show Offline Donations before Website Donations in tabs and overview.
 
 # Committee receipt workflow
+- [ ] Add Delete beside Edit with transaction details, cancellation, and explicit confirmation; verify deletion and updated totals.
 - [x] Add optional offline UPI transaction ID and free-text Book Detail across forms, receipt views, and CSVs.
 - [x] Remove Overview and make Offline Donations the default, retaining CSV upload.
 - [x] Improve phone receipt browsing and forms.
